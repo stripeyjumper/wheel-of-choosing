@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 import WheelSegment from "./WheelSegment";
+import { usePreviousValue } from "./use-previous-value";
 
 interface WheelProps {
   segments: { id: string; label: string; color: string }[];
@@ -32,20 +33,13 @@ const WheelGroup = styled.g<any>`
   animation-name: wheel--animation;
 `;
 
-function usePrevious<TValue>(value: TValue) {
-  const ref = useRef<TValue>();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
-
 function Wheel({ segments, onSpin, selectedSegmentId }: WheelProps) {
   const { radius } = defaultProps;
 
   const angle = (2 * Math.PI) / segments.length;
 
-  const prevSelectedSegmentId = usePrevious(selectedSegmentId);
+  const prevSelectedSegmentId = usePreviousValue(selectedSegmentId);
+
   const { spinAngle, spinDuration } = useMemo(() => {
     return { spinAngle: 720, spinDuration: 3 };
   }, [selectedSegmentId, prevSelectedSegmentId]);
