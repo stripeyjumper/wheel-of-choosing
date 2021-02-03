@@ -3,6 +3,8 @@ import NameList from "./components/NameList";
 import Wheel from "./components/Wheel";
 import { getColors } from "./get-colors";
 import styled from "styled-components";
+import { SegmentInfo } from "./components/types";
+import { v4 as uuid } from "uuid";
 
 const baseColors = ["#488f31", "#ffe48f", "#de425b", "#22a3bd"];
 
@@ -15,30 +17,20 @@ const Container = styled.div`
   flex-direction: row;
 `;
 
-interface SegmentInfo {
-  id: string;
-  label: string;
-  removed?: boolean;
-}
+const defaultSegments = [
+  { label: "Toot" },
+  { label: "Toot 2" },
+  { label: "Toot 3" },
+  { label: "Toot 4" },
+  { label: "Toot 5" },
+  { label: "Toot 6" },
+  { label: "Toot 7" },
+  { label: "Toot 8" },
+  { label: "Toot 9" },
+].map((s) => ({ ...s, id: uuid() }));
 
 function App() {
-  const [segments, setState] = useState<SegmentInfo[]>([
-    { id: "1", label: "Toot" },
-    { id: "2", label: "Toot" },
-    { id: "3", label: "Toot" },
-    { id: "4", label: "Toot" },
-    { id: "5", label: "Toot" },
-    { id: "6", label: "Toot" },
-    { id: "7", label: "Toot" },
-    { id: "8", label: "Toot" },
-    { id: "9", label: "Toot" },
-    { id: "10", label: "Toot" },
-    { id: "11", label: "Toot" },
-    { id: "12", label: "Toot" },
-    { id: "13", label: "Toot" },
-    { id: "14", label: "Toot" },
-  ]);
-
+  const [segments, setSegments] = useState<SegmentInfo[]>(defaultSegments);
   const [selectedSegmentId, setSelectedSegmentId] = useState<string>();
 
   const segmentsWithColors = useMemo(() => {
@@ -56,7 +48,7 @@ function App() {
 
   const handleSpin = useCallback(() => {
     if (selectedSegmentId) {
-      setState((prevSegments) => {
+      setSegments((prevSegments) => {
         const nextSegments = [...prevSegments];
         const index = nextSegments.findIndex(
           ({ id }) => id === selectedSegmentId
@@ -72,6 +64,7 @@ function App() {
       ({ id }) => id !== selectedSegmentId
     );
 
+    // Randomly pick the next segment to spin to
     const nextSegmentIndex = Math.floor(
       Math.random() * nextVisibleSegments.length
     );
@@ -79,17 +72,37 @@ function App() {
     setSelectedSegmentId(nextVisibleSegments[nextSegmentIndex].id);
   }, [selectedSegmentId, visibleSegments]);
 
-  const names = useMemo(() => segments.map(({ label }) => label), [segments]);
+  const handleChange = useCallback(
+    (id: string, name: string) => {
+      const index = segments.findIndex((segment) => segment.id === id);
+      const nextSegments = [...segments];
+      nextSegments[index] = { ...nextSegments[index], label: name };
+      setSegments(nextSegments);
+    },
+    [segments]
+  );
 
-  const handleChanged = useCallback(
-    (names: string[]) =>
-      setState(() =>
-        names.map((name, i) => ({
-          id: `${i}`,
-          label: name,
-        }))
-      ),
-    []
+  const handleDelete = useCallback(
+    (id) => {
+      const index = segments.findIndex((segment) => segment.id === id);
+      const nextSegments = [...segments];
+      nextSegments.splice(index, 1);
+      setSegments(nextSegments);
+    },
+    [segments]
+  );
+
+  const handleCreate = useCallback(
+    (label: string) => {
+      const segment = { label, id: uuid() };
+      setSegments([...segments, segment]);
+    },
+    [segments]
+  );
+
+  const handleReset = useCallback(
+    () => setSegments(segments.map((s) => ({ ...s, removed: false }))),
+    [segments]
   );
 
   return (
@@ -98,7 +111,12 @@ function App() {
         <Heading>Wheel of choosing</Heading>
       </header>
       <Container>
-        <NameList names={names} onChanged={handleChanged} />
+        <NameList
+          segments={segments}
+          onChange={handleChange}
+          onDelete={handleDelete}
+          onCreate={handleCreate}
+        />
         <Wheel
           segments={visibleSegments}
           onSpin={handleSpin}
@@ -111,6 +129,9 @@ function App() {
         disabled={visibleSegments.length <= 1}
       >
         Spin!
+      </button>
+      <button onClick={handleReset} type="button">
+        Reset
       </button>
     </div>
   );

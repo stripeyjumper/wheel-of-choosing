@@ -1,8 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import { SegmentInfo } from "./types";
 interface NameListProps {
-  names: string[];
-  onChanged: (names: string[]) => void;
+  segments: SegmentInfo[];
+  onChange: (id: string, label: string) => void;
+  onDelete: (id: string) => void;
+  onCreate: (label: string) => void;
 }
 
 const ListContainer = styled.div`
@@ -10,24 +13,16 @@ const ListContainer = styled.div`
   flex-direction: column;
 `;
 
-function NameList({ names, onChanged }: NameListProps) {
+function NameList({ segments, onChange, onDelete, onCreate }: NameListProps) {
   return (
     <ListContainer>
-      {names.map((name, i) => {
+      {segments.map(({ id, label }) => {
         return (
           <NameInput
-            key={i}
-            name={name}
-            onNameChanged={(value) => {
-              const nextNames = [...names];
-              nextNames[i] = value;
-              onChanged(nextNames);
-            }}
-            onDelete={() => {
-              const nextNames = [...names];
-              nextNames.splice(i, 1);
-              onChanged(nextNames);
-            }}
+            key={id}
+            name={label}
+            onNameChanged={() => onChange(id, label)}
+            onDelete={() => onDelete(id)}
           />
         );
       })}
