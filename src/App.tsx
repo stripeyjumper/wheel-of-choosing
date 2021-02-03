@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import "./App.css";
 import NameList from "./components/NameList";
 import Wheel from "./components/Wheel";
 import { getColors } from "./get-colors";
@@ -16,46 +15,31 @@ const Container = styled.div`
   flex-direction: row;
 `;
 
+interface SegmentInfo {
+  id: string;
+  label: string;
+  removed?: boolean;
+}
+
 function App() {
-  const [{ segments }, setState] = useState({
-    segments: [
-      { id: "1", label: "Toot" },
-      { id: "2", label: "Toot" },
-      { id: "3", label: "Toot" },
-      { id: "4", label: "Toot" },
-      { id: "5", label: "Toot" },
-      { id: "6", label: "Toot" },
-      { id: "7", label: "Toot" },
-      { id: "8", label: "Toot" },
-      { id: "9", label: "Toot" },
-      { id: "10", label: "Toot" },
-      { id: "11", label: "Toot" },
-      { id: "12", label: "Toot" },
-      { id: "13", label: "Toot" },
-      { id: "14", label: "Toot" },
-    ],
-  });
+  const [segments, setState] = useState<SegmentInfo[]>([
+    { id: "1", label: "Toot" },
+    { id: "2", label: "Toot" },
+    { id: "3", label: "Toot" },
+    { id: "4", label: "Toot" },
+    { id: "5", label: "Toot" },
+    { id: "6", label: "Toot" },
+    { id: "7", label: "Toot" },
+    { id: "8", label: "Toot" },
+    { id: "9", label: "Toot" },
+    { id: "10", label: "Toot" },
+    { id: "11", label: "Toot" },
+    { id: "12", label: "Toot" },
+    { id: "13", label: "Toot" },
+    { id: "14", label: "Toot" },
+  ]);
 
   const [selectedSegmentId, setSelectedSegmentId] = useState<string>();
-
-  const handleSpin = useCallback(() => {
-    const nextSegmentIndex = Math.floor(Math.random() * segments.length);
-    setSelectedSegmentId(segments[nextSegmentIndex].id);
-  }, [segments]);
-
-  const names = useMemo(() => segments.map(({ label }) => label), [segments]);
-
-  const handleChanged = useCallback(
-    (names: string[]) =>
-      setState((prevState) => ({
-        ...prevState,
-        segments: names.map((name, i) => ({
-          id: `${i}`,
-          label: name,
-        })),
-      })),
-    []
-  );
 
   const segmentsWithColors = useMemo(() => {
     const colors = getColors(segments.length, baseColors);
@@ -65,6 +49,49 @@ function App() {
     }));
   }, [segments]);
 
+  const visibleSegments = useMemo(
+    () => segmentsWithColors.filter(({ removed }) => !removed),
+    [segmentsWithColors]
+  );
+
+  const handleSpin = useCallback(() => {
+    if (selectedSegmentId) {
+      setState((prevSegments) => {
+        const nextSegments = [...prevSegments];
+        const index = nextSegments.findIndex(
+          ({ id }) => id === selectedSegmentId
+        );
+
+        nextSegments[index] = { ...nextSegments[index], removed: true };
+
+        return nextSegments;
+      });
+    }
+
+    const nextVisibleSegments = visibleSegments.filter(
+      ({ id }) => id !== selectedSegmentId
+    );
+
+    const nextSegmentIndex = Math.floor(
+      Math.random() * nextVisibleSegments.length
+    );
+
+    setSelectedSegmentId(nextVisibleSegments[nextSegmentIndex].id);
+  }, [selectedSegmentId, visibleSegments]);
+
+  const names = useMemo(() => segments.map(({ label }) => label), [segments]);
+
+  const handleChanged = useCallback(
+    (names: string[]) =>
+      setState(() =>
+        names.map((name, i) => ({
+          id: `${i}`,
+          label: name,
+        }))
+      ),
+    []
+  );
+
   return (
     <div className="App">
       <header className="App-header">
@@ -73,11 +100,18 @@ function App() {
       <Container>
         <NameList names={names} onChanged={handleChanged} />
         <Wheel
-          segments={segmentsWithColors}
+          segments={visibleSegments}
           onSpin={handleSpin}
           selectedSegmentId={selectedSegmentId}
         />
       </Container>
+      <button
+        onClick={handleSpin}
+        type="button"
+        disabled={visibleSegments.length <= 1}
+      >
+        Spin!
+      </button>
     </div>
   );
 }
