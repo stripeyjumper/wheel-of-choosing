@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { SegmentInfo } from "./types";
 import CreateNameInput from "./CreateNameInput";
+import AutosizeInput from "react-input-autosize";
+
 interface NameListProps {
   segments: SegmentInfo[];
   onChange: (id: string, label: string) => void;
@@ -57,7 +59,7 @@ const ReadOnlyInput = styled.p<any>`
   text-decoration: ${({ removed }) => (removed ? "line-through" : "none")};
 `;
 
-const StyledInput = styled.input`
+const StyledInput = styled(AutosizeInput)`
   margin: 0;
   padding: 0.2em;
   font-size: 10pt;
@@ -66,20 +68,22 @@ const StyledInput = styled.input`
   outline: none;
 `;
 
-const DeleteButton = styled.button``;
-
 function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
-  const inputRef = useRef<any>();
+  const inputRef = useRef<any>(null);
   const [hasFocus, setHasFocus] = useState(false);
-  const [hasMouseDown, setHasMouseDown] = useState(false);
 
-  const handleChange = useCallback((e) => onNameChanged(e.target.value), [
-    onNameChanged,
-  ]);
+  const handleChange = useCallback(
+    (e) => {
+      if (e.target.value) {
+        onNameChanged(e.target.value);
+      } else {
+        onDelete();
+      }
+    },
+    [onNameChanged, onDelete]
+  );
 
-  const handleBlur = useCallback(() => !hasMouseDown && setHasFocus(false), [
-    hasMouseDown,
-  ]);
+  const handleBlur = useCallback(() => setHasFocus(false), []);
   const handleFocus = useCallback(() => setHasFocus(true), []);
 
   useEffect(() => {
@@ -102,16 +106,6 @@ function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
       ) : (
         <ReadOnlyInput removed={removed}>{name}</ReadOnlyInput>
       )}
-      <DeleteButton
-        type="button"
-        onTouchStart={() => setHasMouseDown(true)}
-        onMouseDown={() => setHasMouseDown(true)}
-        onTouchEnd={() => setHasMouseDown(false)}
-        onMouseUp={() => setHasMouseDown(false)}
-        onClick={onDelete}
-      >
-        Delete
-      </DeleteButton>
     </InputRow>
   );
 }
