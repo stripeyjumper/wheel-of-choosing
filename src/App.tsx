@@ -92,13 +92,11 @@ function App() {
     [segments]
   );
 
-  const handleCreate = useCallback(
-    (label: string) => {
-      const segment = { label, id: uuid() };
-      setSegments([...segments, segment]);
-    },
-    [segments]
-  );
+  const handleCreate = useCallback((label: string) => {
+    console.log("Create!");
+    const segment = { label, id: uuid() };
+    setSegments((prevSegments) => [segment, ...prevSegments]);
+  }, []);
 
   const handleReset = useCallback(
     () => setSegments(segments.map((s) => ({ ...s, removed: false }))),

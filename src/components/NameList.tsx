@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { SegmentInfo } from "./types";
+import CreateNameInput from "./CreateNameInput";
 interface NameListProps {
   segments: SegmentInfo[];
   onChange: (id: string, label: string) => void;
@@ -11,18 +12,21 @@ interface NameListProps {
 const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
+  padding: 1rem;
 `;
 
 function NameList({ segments, onChange, onDelete, onCreate }: NameListProps) {
   return (
     <ListContainer>
-      {segments.map(({ id, label }) => {
+      <CreateNameInput onCreate={onCreate} />
+      {segments.map(({ id, label, removed }) => {
         return (
           <NameInput
             key={id}
             name={label}
-            onNameChanged={() => onChange(id, label)}
+            onNameChanged={(value) => onChange(id, value)}
             onDelete={() => onDelete(id)}
+            removed={!!removed}
           />
         );
       })}
@@ -32,6 +36,7 @@ function NameList({ segments, onChange, onDelete, onCreate }: NameListProps) {
 
 interface NameInputProps {
   name: string;
+  removed: boolean;
   onNameChanged: (value: string) => void;
   onDelete: () => void;
 }
@@ -40,14 +45,16 @@ const InputRow = styled.div`
   display: flex;
   flex-direction: row;
   width: 200px;
+  padding: 0.2rem;
 `;
 
-const ReadOnlyInput = styled.p`
+const ReadOnlyInput = styled.p<any>`
   margin: 0;
   padding: 0.2em;
   font-size: 10pt;
   font-family: sans-serif;
   border: 1px solid transparent;
+  text-decoration: ${({ removed }) => (removed ? "line-through" : "none")};
 `;
 
 const StyledInput = styled.input`
@@ -56,21 +63,19 @@ const StyledInput = styled.input`
   font-size: 10pt;
   font-family: sans-serif;
   border: 1px solid transparent;
+  outline: none;
 `;
 
 const DeleteButton = styled.button``;
 
-function NameInput({ name, onNameChanged, onDelete }: NameInputProps) {
+function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
   const inputRef = useRef<any>();
   const [hasFocus, setHasFocus] = useState(false);
   const [hasMouseDown, setHasMouseDown] = useState(false);
 
-  const handleChange = useCallback(
-    (e) => {
-      onNameChanged(e.target.value);
-    },
-    [onNameChanged]
-  );
+  const handleChange = useCallback((e) => onNameChanged(e.target.value), [
+    onNameChanged,
+  ]);
 
   const handleBlur = useCallback(() => !hasMouseDown && setHasFocus(false), [
     hasMouseDown,
@@ -93,20 +98,20 @@ function NameInput({ name, onNameChanged, onDelete }: NameInputProps) {
             value={name}
             onChange={handleChange}
           />
-          <DeleteButton
-            type="button"
-            onTouchStart={() => setHasMouseDown(true)}
-            onMouseDown={() => setHasMouseDown(true)}
-            onTouchEnd={() => setHasMouseDown(false)}
-            onMouseUp={() => setHasMouseDown(false)}
-            onClick={onDelete}
-          >
-            Delete
-          </DeleteButton>
         </>
       ) : (
-        <ReadOnlyInput>{name}</ReadOnlyInput>
+        <ReadOnlyInput removed={removed}>{name}</ReadOnlyInput>
       )}
+      <DeleteButton
+        type="button"
+        onTouchStart={() => setHasMouseDown(true)}
+        onMouseDown={() => setHasMouseDown(true)}
+        onTouchEnd={() => setHasMouseDown(false)}
+        onMouseUp={() => setHasMouseDown(false)}
+        onClick={onDelete}
+      >
+        Delete
+      </DeleteButton>
     </InputRow>
   );
 }
