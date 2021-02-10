@@ -47,26 +47,26 @@ function App() {
   );
 
   const handleSpin = useCallback(() => {
-    if (selectedSegmentId) {
-      setSegments((prevSegments) => {
-        const nextSegments = [...prevSegments];
+    // Randomly pick the next segment to spin to
+    const nextSegmentIndex = Math.floor(
+      Math.random() * (visibleSegments.length - 1)
+    );
+
+    setSegments((prevSegments) => {
+      const nextSegments = [...prevSegments];
+
+      if (selectedSegmentId) {
         const index = nextSegments.findIndex(
           ({ id }) => id === selectedSegmentId
         );
-
         nextSegments[index] = { ...nextSegments[index], removed: true };
+      }
 
-        return nextSegments;
-      });
-    }
+      return nextSegments;
+    });
 
     const nextVisibleSegments = visibleSegments.filter(
       ({ id }) => id !== selectedSegmentId
-    );
-
-    // Randomly pick the next segment to spin to
-    const nextSegmentIndex = Math.floor(
-      Math.random() * nextVisibleSegments.length
     );
 
     setSelectedSegmentId(nextVisibleSegments[nextSegmentIndex].id);
