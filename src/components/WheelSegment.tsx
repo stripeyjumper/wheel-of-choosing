@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
+const SegmentCircle = styled.circle`
+  vector-effect: non-scaling-stroke;
+  pointer-events: auto;
+`;
+
 const SegmentPath = styled.path`
   vector-effect: non-scaling-stroke;
   pointer-events: auto;
@@ -78,15 +83,19 @@ function WheelSegment({
 
   return (
     <>
-      <SegmentPath
-        d={`M0 0${formatNumber(x1)}${formatNumber(y1)}A${formatNumber(
-          radius
-        )} ${formatNumber(radius)} 0 0 1${formatNumber(x2)}${formatNumber(
-          y2
-        )}Z`}
-        fill={color}
-        onClick={onClick}
-      />
+      {angle >= 2 * Math.PI ? (
+        <SegmentCircle r={radius} fill={color} onClick={onClick} />
+      ) : (
+        <SegmentPath
+          d={`M0 0${formatNumber(x1)}${formatNumber(y1)}A${formatNumber(
+            radius
+          )} ${formatNumber(radius)} 0 0 1${formatNumber(x2)}${formatNumber(
+            y2
+          )}Z`}
+          fill={color}
+          onClick={onClick}
+        />
+      )}
       <SegmentLabel
         id={labelId}
         text-anchor="start"

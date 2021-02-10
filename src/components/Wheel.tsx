@@ -39,7 +39,8 @@ function Wheel({ segments, onSpin, selectedSegmentId }: WheelProps) {
     const twoPi = 2 * Math.PI;
     const angle = twoPi / segments.length;
 
-    const wobble = (Math.random() - 0.5) * angle * 0.75;
+    const wobble =
+      (Math.random() - 0.5) * angle * (segments.length > 1 ? 0.75 : 0.1);
 
     const prevSpinAngle = mod(spinAngle.get(), twoPi);
     const nextSpinAngle = mod(index * angle * -1, twoPi);
