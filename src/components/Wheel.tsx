@@ -3,9 +3,10 @@ import WheelSegment from "./WheelSegment";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
 
 interface WheelProps {
-  segments: { id: string; label: string; color: string }[];
-  onSpin: () => void;
-  selectedSegmentId?: string;
+  segments: { id: string; label: string; color: string; selected?: boolean }[];
+  onSpinStart: () => void;
+  onSpinEnd: () => void;
+  isSpinning: boolean;
 }
 
 const defaultProps = {
@@ -24,33 +25,38 @@ function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function Wheel({ segments, onSpin, selectedSegmentId }: WheelProps) {
+function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
   const spinAngle = useSpring(0, { duration: 2000 });
   const segmentAngle = (2 * Math.PI) / segments.length;
 
   const { radius } = defaultProps;
 
-  const index = Math.max(
-    segments.findIndex(({ id }) => id === selectedSegmentId) || 0,
-    0
-  );
-
   useEffect(() => {
-    const twoPi = 2 * Math.PI;
-    const angle = twoPi / segments.length;
+    if (isSpinning) {
+      const index = Math.max(
+        segments.findIndex(({ selected }) => selected),
+        0
+      );
 
-    const wobble =
-      (Math.random() - 0.5) * angle * (segments.length > 1 ? 0.75 : 0.1);
+      const twoPi = 2 * Math.PI;
+      const angle = twoPi / segments.length;
 
-    const prevSpinAngle = mod(spinAngle.get(), twoPi);
-    const nextSpinAngle = mod(index * angle * -1, twoPi);
-    const diff = mod(nextSpinAngle - prevSpinAngle, twoPi);
-    spinAngle.set(spinAngle.get() + diff + wobble + twoPi * getRandomInt(1, 4));
-  }, [selectedSegmentId, spinAngle, segments.length, index]);
+      const wobble =
+        (Math.random() - 0.5) * angle * (segments.length > 1 ? 0.75 : 0.1);
+
+      const prevSpinAngle = mod(spinAngle.get(), twoPi);
+      const nextSpinAngle = mod(index * angle * -1, twoPi);
+      const diff = mod(nextSpinAngle - prevSpinAngle, twoPi);
+      spinAngle.set(
+        spinAngle.get() + diff + wobble + twoPi * getRandomInt(1, 4)
+      );
+    }
+  }, [isSpinning, spinAngle, segments]);
 
   const transform = useMotionTemplate`rotate(${spinAngle}rad) translate(100px, 100px)`;
   return (
     <>
+      <p>{isSpinning ? "Spinning!" : "Not spinning"}</p>
       <svg
         width="600"
         height="400"
@@ -62,8 +68,9 @@ function Wheel({ segments, onSpin, selectedSegmentId }: WheelProps) {
           transform={transform}
           transition={{ ease: "easeOut", duration: 4 }}
           style={{ originX: "100px", originY: "100px" }}
+          onAnimationEnd={onSpinEnd}
         >
-          {segments.map(({ id, label, color }, i) => {
+          {segments.map(({ id, label, color, selected }, i) => {
             const rotation = i * segmentAngle;
 
             return (
@@ -75,7 +82,8 @@ function Wheel({ segments, onSpin, selectedSegmentId }: WheelProps) {
                 angle={segmentAngle}
                 label={`${label}`}
                 key={id}
-                onClick={onSpin}
+                onClick={onSpinStart}
+                selected={!isSpinning && !!selected}
               />
             );
           })}

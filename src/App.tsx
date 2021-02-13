@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import NameList from "./components/NameList";
 import Wheel from "./components/Wheel";
 import { getColors } from "./get-colors";
@@ -6,10 +6,9 @@ import styled from "styled-components";
 import {
   CreateSegmentAction,
   DeleteSegmentAction,
-  SegmentInfo,
+  ResetWheelAction,
   UpdateSegmentAction,
 } from "./components/types";
-import { v4 as uuid } from "uuid";
 import { useWheels } from "./components/use-wheels";
 
 const baseColors = ["#488f31", "#ffe48f", "#de425b", "#22a3bd"];
@@ -23,22 +22,11 @@ const Container = styled.div`
   flex-direction: row;
 `;
 
-const defaultSegments = [
-  { label: "Toot" },
-  { label: "Toot 2" },
-  { label: "Toot 3" },
-  { label: "Toot 4" },
-  { label: "Toot 5" },
-  { label: "Toot 6" },
-  { label: "Toot 7" },
-  { label: "Toot 8" },
-  { label: "Toot 9" },
-].map((s) => ({ ...s, id: uuid() }));
-
 function App() {
   const {
     dispatch,
     selectedWheel: { id: wheelId, segments },
+    isSpinning,
   } = useWheels();
 
   const segmentsWithColors = useMemo(() => {
@@ -54,13 +42,12 @@ function App() {
     [segmentsWithColors]
   );
 
-  const selectedSegmentId = useMemo(() => {
-    const selected = segments.find(({ selected }) => selected);
-    return selected?.id;
-  }, [segments]);
+  const handleSpinStart = useCallback(() => {
+    dispatch({ type: "START_SPIN" });
+  }, [dispatch]);
 
-  const handleSpin = useCallback(() => {
-    dispatch({ type: "SPIN" });
+  const handleSpinEnd = useCallback(() => {
+    dispatch({ type: "END_SPIN" });
   }, [dispatch]);
 
   const handleChange = useCallback(
@@ -92,6 +79,10 @@ function App() {
     [dispatch, wheelId]
   );
 
+  const handleReset = useCallback(() => {
+    dispatch({ type: "RESET_WHEEL", id: wheelId } as ResetWheelAction);
+  }, [dispatch, wheelId]);
+
   return (
     <div className="App">
       <header className="App-header">
@@ -106,20 +97,21 @@ function App() {
         />
         <Wheel
           segments={visibleSegments}
-          onSpin={handleSpin}
-          selectedSegmentId={selectedSegmentId}
+          onSpinStart={handleSpinStart}
+          onSpinEnd={handleSpinEnd}
+          isSpinning={isSpinning}
         />
       </Container>
       <button
-        onClick={handleSpin}
+        onClick={handleSpinStart}
         type="button"
         disabled={visibleSegments.length <= 1}
       >
         Spin!
       </button>
-      {/* <button onClick={handleReset} type="button">
+      <button onClick={handleReset} type="button">
         Reset
-      </button> */}
+      </button>
     </div>
   );
 }

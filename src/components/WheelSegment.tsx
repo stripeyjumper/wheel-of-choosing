@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const SegmentCircle = styled.circle`
   vector-effect: non-scaling-stroke;
@@ -15,7 +15,9 @@ const SegmentLabel = styled.text<any>`
   font-family: sans-serif;
   font-size: 6pt;
   font-weight: normal;
-  fill: ${({ hideLabel }) => (hideLabel ? "transparent" : "black")};
+  ${({ hideLabel, selected }) => css`
+    fill: ${hideLabel ? "transparent" : selected ? "blue" : "black"};
+  `}
   stroke: none;
 `;
 
@@ -27,6 +29,7 @@ interface SegmentProps {
   rotation: number;
   color: string;
   onClick?: () => void;
+  selected: boolean;
 }
 
 function formatNumber(value: number) {
@@ -54,6 +57,7 @@ function WheelSegment({
   rotation,
   label,
   onClick,
+  selected,
 }: SegmentProps) {
   const labelRef = useRef<any>(null);
   const [textState, setTextState] = useState<{
@@ -106,6 +110,7 @@ function WheelSegment({
         })`}
         ref={labelRef}
         hideLabel={!textState}
+        selected={selected}
       >
         {label}
       </SegmentLabel>

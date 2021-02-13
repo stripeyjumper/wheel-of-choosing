@@ -45,3 +45,8 @@ export interface DeleteSegmentAction extends Action {
   wheelId: string;
   id: string;
 }
+
+export interface ResetWheelAction extends Action {
+  type: "RESET_WHEEL";
+  id: string;
+}

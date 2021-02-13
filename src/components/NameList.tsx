@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { SegmentInfo } from "./types";
+import { WheelSegment } from "./types";
 import CreateNameInput from "./CreateNameInput";
 import AutosizeInput from "react-input-autosize";
 
 interface NameListProps {
-  segments: SegmentInfo[];
+  segments: WheelSegment[];
   onChange: (id: string, label: string) => void;
   onDelete: (id: string) => void;
   onCreate: (label: string) => void;

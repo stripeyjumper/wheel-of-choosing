@@ -7,6 +7,7 @@ import {
   CreateSegmentAction,
   UpdateSegmentAction,
   DeleteSegmentAction,
+  ResetWheelAction,
 } from "./types";
 
 const defaultWheelId = uuid();
@@ -89,7 +90,7 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
         })),
       };
     }
-    case "SPIN": {
+    case "START_SPIN": {
       const { currentWheelId, wheels } = state;
 
       return {
@@ -123,6 +124,27 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
           };
         }),
         isSpinning: true,
+      };
+    }
+    case "END_SPIN": {
+      return {
+        ...state,
+        isSpinning: false,
+      };
+    }
+    case "RESET_WHEEL": {
+      const { id } = action as ResetWheelAction;
+
+      return {
+        ...state,
+        wheels: updateItemInArray(state.wheels, id, (wheel) => ({
+          ...wheel,
+          segments: wheel.segments.map(({ removed, selected, ...rest }) => ({
+            removed: false,
+            selected: false,
+            ...rest,
+          })),
+        })),
       };
     }
     default:
