@@ -47,6 +47,10 @@ function deleteItemFromArray<TItem extends { id: any }>(
   return result;
 }
 
+function getRandomInteger(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function reducer(state: WheelManagerState, action: Action): WheelManagerState {
   switch (action.type) {
     case "CREATE_SEGMENT": {
@@ -102,8 +106,9 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
           );
 
           // Randomly pick the next segment to spin to
-          const selectedSegmentIndex = Math.floor(
-            Math.random() * (visibleSegments.length - 1)
+          const selectedSegmentIndex = getRandomInteger(
+            0,
+            visibleSegments.length - 1
           );
 
           const { id: selectedSegmentId } = visibleSegments[
