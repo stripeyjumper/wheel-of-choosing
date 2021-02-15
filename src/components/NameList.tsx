@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { WheelSegment } from "./types";
+import { Wheel } from "./types";
 import CreateNameInput from "./CreateNameInput";
 import AutosizeInput from "react-input-autosize";
 
 interface NameListProps {
-  segments: WheelSegment[];
+  wheel: Wheel;
   onChange: (id: string, label: string) => void;
   onDelete: (id: string) => void;
   onCreate: (label: string) => void;
@@ -15,12 +15,27 @@ const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem;
+  margin: 1rem;
+  border: 1px solid #ddd;
 `;
 
-function NameList({ segments, onChange, onDelete, onCreate }: NameListProps) {
+const ListTitleContainer = styled.div`
+  h2 {
+    margin-top: 0;
+  }
+`;
+
+function NameList({
+  wheel: { label, segments },
+  onChange,
+  onDelete,
+  onCreate,
+}: NameListProps) {
   return (
     <ListContainer>
-      <CreateNameInput onCreate={onCreate} />
+      <ListTitleContainer>
+        <h2>{label}</h2>
+      </ListTitleContainer>
       {segments.map(({ id, label, removed }) => {
         return (
           <NameInput
@@ -32,6 +47,7 @@ function NameList({ segments, onChange, onDelete, onCreate }: NameListProps) {
           />
         );
       })}
+      <CreateNameInput onCreate={onCreate} />
     </ListContainer>
   );
 }

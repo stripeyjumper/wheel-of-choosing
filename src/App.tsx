@@ -23,11 +23,9 @@ const Container = styled.div`
 `;
 
 function App() {
-  const {
-    dispatch,
-    selectedWheel: { id: wheelId, segments },
-    isSpinning,
-  } = useWheels();
+  const { dispatch, selectedWheel } = useWheels();
+
+  const { id: wheelId, segments, isSpinning } = selectedWheel;
 
   const segmentsWithColors = useMemo(() => {
     const colors = getColors(segments.length, baseColors);
@@ -90,7 +88,7 @@ function App() {
       </header>
       <Container>
         <NameList
-          segments={segments}
+          wheel={selectedWheel}
           onChange={handleChange}
           onDelete={handleDelete}
           onCreate={handleCreate}

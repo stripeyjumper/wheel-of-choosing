@@ -17,8 +17,9 @@ export interface WheelSegment {
 
 export interface Wheel {
   id: string;
-  name?: string;
+  label?: string;
   segments: WheelSegment[];
+  isSpinning: boolean;
 }
 
 export interface WheelManagerState {
@@ -48,5 +49,21 @@ export interface DeleteSegmentAction extends Action {
 
 export interface ResetWheelAction extends Action {
   type: "RESET_WHEEL";
+  id: string;
+}
+
+export interface CreateWheelAction extends Action {
+  type: "CREATE_WHEEL";
+  label: string;
+}
+
+export interface UpdateWheelAction extends Action {
+  type: "UPDATE_WHEEL";
+  id: string;
+  label: string;
+}
+
+export interface DeleteWheelAction extends Action {
+  type: "DELETE_WHEEL";
   id: string;
 }

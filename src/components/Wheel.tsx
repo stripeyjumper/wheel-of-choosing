@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import WheelSegment from "./WheelSegment";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
 import { getRandomInteger } from "./get-random-integer";
+import styled from "styled-components";
 interface WheelProps {
   segments: { id: string; label: string; color: string; selected?: boolean }[];
   onSpinStart: () => void;
@@ -14,6 +15,18 @@ const defaultProps = {
 };
 
 const WheelGroup = motion.g;
+
+const SpinButton = styled.button`
+  width: 200px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const WheelContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 function mod(n: number, m: number) {
   return ((n % m) + m) % m;
@@ -67,7 +80,7 @@ function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
   const rotate = useMotionTemplate`${spinAngle}rad`;
 
   return (
-    <>
+    <WheelContainer>
       <svg
         width="600"
         height="400"
@@ -103,7 +116,13 @@ function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
           })}
         </WheelGroup>
       </svg>
-    </>
+      <SpinButton
+        disabled={isSpinning || segments.length === 1}
+        onClick={onSpinStart}
+      >
+        Spin
+      </SpinButton>
+    </WheelContainer>
   );
 }
 

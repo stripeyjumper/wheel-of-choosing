@@ -8,6 +8,9 @@ import {
   UpdateSegmentAction,
   DeleteSegmentAction,
   ResetWheelAction,
+  CreateWheelAction,
+  UpdateWheelAction,
+  DeleteWheelAction,
 } from "./types";
 import { getRandomInteger } from "./get-random-integer";
 
@@ -17,6 +20,7 @@ const defaultState: WheelManagerState = {
   wheels: [
     {
       id: defaultWheelId,
+      label: "Wheel 1",
       segments: [
         { id: uuid(), label: "toot 1" },
         { id: uuid(), label: "toot 2" },
@@ -24,6 +28,7 @@ const defaultState: WheelManagerState = {
         { id: uuid(), label: "toot 4" },
         { id: uuid(), label: "toot 5" },
       ],
+      isSpinning: false,
     },
   ],
   currentWheelId: defaultWheelId,
@@ -65,8 +70,8 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
           return {
             ...wheel,
             segments: [
-              { id: uuid(), label, selected: false, removed: false },
               ...wheel.segments,
+              { id: uuid(), label, selected: false, removed: false },
             ],
           };
         }),
@@ -104,9 +109,14 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
         ...state,
         wheels: updateItemInArray(wheels, currentWheelId, (wheel) => {
           const { segments } = wheel;
+
           const visibleSegments = segments.filter(
             ({ removed, selected }) => !removed && !selected
           );
+
+          if (!visibleSegments.length) {
+            return wheel;
+          }
 
           // Randomly pick the next segment to spin to
           const selectedSegmentIndex = getRandomInteger(
@@ -129,15 +139,25 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
           return {
             ...wheel,
             segments: nextSegments,
+            isSpinning: true,
           };
         }),
-        isSpinning: true,
       };
     }
     case "END_SPIN": {
+      const { currentWheelId, wheels } = state;
+
       return {
         ...state,
-        isSpinning: false,
+        wheels: updateItemInArray(wheels, currentWheelId, (wheel) => {
+          if (wheel.isSpinning) {
+            return {
+              ...wheel,
+              isSpinning: false,
+            };
+          }
+          return wheel;
+        }),
       };
     }
     case "RESET_WHEEL": {
@@ -153,6 +173,40 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
             ...rest,
           })),
         })),
+      };
+    }
+    case "CREATE_WHEEL": {
+      const { label } = action as CreateWheelAction;
+
+      return {
+        ...state,
+        wheels: [
+          ...state.wheels,
+          {
+            id: uuid(),
+            label: label || `Wheel ${state.wheels.length + 1}`,
+            segments: [],
+            isSpinning: false,
+          },
+        ],
+      };
+    }
+    case "UPDATE_WHEEL": {
+      const { id, label } = action as UpdateWheelAction;
+
+      return {
+        ...state,
+        wheels: updateItemInArray(state.wheels, id, (wheel) => ({
+          ...wheel,
+          label,
+        })),
+      };
+    }
+    case "DELETE_WHEEL": {
+      const { id } = action as DeleteWheelAction;
+      return {
+        ...state,
+        wheels: deleteItemFromArray(state.wheels, id),
       };
     }
     default:
