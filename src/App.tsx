@@ -6,7 +6,9 @@ import styled from "styled-components";
 import {
   CreateSegmentAction,
   DeleteSegmentAction,
+  DeleteWheelAction,
   ResetWheelAction,
+  SelectWheelAction,
   UpdateSegmentAction,
 } from "./components/types";
 import { useWheels } from "./components/use-wheels";
@@ -22,10 +24,15 @@ const Container = styled.div`
   flex-direction: row;
 `;
 
-function App() {
-  const { dispatch, selectedWheel } = useWheels();
+const NameListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
-  const { id: wheelId, segments, isSpinning } = selectedWheel;
+function App() {
+  const { dispatch, wheels, selectedWheel } = useWheels();
+
+  const { id: selectedWheelId, segments, isSpinning } = selectedWheel;
 
   const segmentsWithColors = useMemo(() => {
     const colors = getColors(segments.length, baseColors);
@@ -49,7 +56,7 @@ function App() {
   }, [dispatch]);
 
   const handleChange = useCallback(
-    (id: string, name: string) => {
+    (wheelId: string) => (id: string, name: string) => {
       dispatch({
         type: "UPDATE_SEGMENT",
         wheelId,
@@ -57,29 +64,56 @@ function App() {
         label: name,
       } as UpdateSegmentAction);
     },
-    [dispatch, wheelId]
+    [dispatch]
   );
 
   const handleDelete = useCallback(
-    (id) =>
-      dispatch({ type: "DELETE_SEGMENT", wheelId, id } as DeleteSegmentAction),
-    [dispatch, wheelId]
+    (wheelId: string) => (id: string) =>
+      dispatch({
+        type: "DELETE_SEGMENT",
+        wheelId,
+        id,
+      } as DeleteSegmentAction),
+    [dispatch]
   );
 
   const handleCreate = useCallback(
-    (name: string) => {
+    (wheelId: string) => (name: string) => {
       dispatch({
         type: "CREATE_SEGMENT",
         wheelId,
         label: name,
       } as CreateSegmentAction);
     },
-    [dispatch, wheelId]
+    [dispatch]
   );
 
   const handleReset = useCallback(() => {
-    dispatch({ type: "RESET_WHEEL", id: wheelId } as ResetWheelAction);
-  }, [dispatch, wheelId]);
+    dispatch({ type: "RESET_WHEEL", id: selectedWheelId } as ResetWheelAction);
+  }, [dispatch, selectedWheelId]);
+
+  const handleCreateWheel = useCallback(
+    () => dispatch({ type: "CREATE_WHEEL" }),
+    [dispatch]
+  );
+
+  const handleSelect = useCallback(
+    (id: string) => () =>
+      dispatch({
+        type: "SELECT_WHEEL",
+        id,
+      } as SelectWheelAction),
+    [dispatch]
+  );
+
+  const handleDeleteWheel = useCallback(
+    (id: string) => () =>
+      dispatch({
+        type: "DELETE_WHEEL",
+        id,
+      } as DeleteWheelAction),
+    [dispatch]
+  );
 
   return (
     <div className="App">
@@ -87,12 +121,20 @@ function App() {
         <Heading>Wheel of choosing</Heading>
       </header>
       <Container>
-        <NameList
-          wheel={selectedWheel}
-          onChange={handleChange}
-          onDelete={handleDelete}
-          onCreate={handleCreate}
-        />
+        <NameListContainer>
+          {wheels.map((wheel) => (
+            <NameList
+              key={wheel.id}
+              wheel={wheel}
+              onChange={handleChange(wheel.id)}
+              onDelete={handleDelete(wheel.id)}
+              onCreate={handleCreate(wheel.id)}
+              onSelect={handleSelect(wheel.id)}
+              onDeleteWheel={handleDeleteWheel(wheel.id)}
+              canDeleteWheel={wheels.length > 1}
+            />
+          ))}
+        </NameListContainer>
         <Wheel
           segments={visibleSegments}
           onSpinStart={handleSpinStart}
@@ -100,12 +142,8 @@ function App() {
           isSpinning={isSpinning}
         />
       </Container>
-      <button
-        onClick={handleSpinStart}
-        type="button"
-        disabled={visibleSegments.length <= 1}
-      >
-        Spin!
+      <button onClick={handleCreateWheel} type="button">
+        Add wheel
       </button>
       <button onClick={handleReset} type="button">
         Reset

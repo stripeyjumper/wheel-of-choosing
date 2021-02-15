@@ -11,6 +11,7 @@ import {
   CreateWheelAction,
   UpdateWheelAction,
   DeleteWheelAction,
+  SelectWheelAction,
 } from "./types";
 import { getRandomInteger } from "./get-random-integer";
 
@@ -31,7 +32,7 @@ const defaultState: WheelManagerState = {
       isSpinning: false,
     },
   ],
-  currentWheelId: defaultWheelId,
+  selectedWheelId: defaultWheelId,
   isSpinning: false,
 };
 
@@ -103,11 +104,11 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
       };
     }
     case "START_SPIN": {
-      const { currentWheelId, wheels } = state;
+      const { selectedWheelId, wheels } = state;
 
       return {
         ...state,
-        wheels: updateItemInArray(wheels, currentWheelId, (wheel) => {
+        wheels: updateItemInArray(wheels, selectedWheelId, (wheel) => {
           const { segments } = wheel;
 
           const visibleSegments = segments.filter(
@@ -145,11 +146,11 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
       };
     }
     case "END_SPIN": {
-      const { currentWheelId, wheels } = state;
+      const { selectedWheelId, wheels } = state;
 
       return {
         ...state,
-        wheels: updateItemInArray(wheels, currentWheelId, (wheel) => {
+        wheels: updateItemInArray(wheels, selectedWheelId, (wheel) => {
           if (wheel.isSpinning) {
             return {
               ...wheel,
@@ -204,9 +205,34 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
     }
     case "DELETE_WHEEL": {
       const { id } = action as DeleteWheelAction;
+
+      if (state.wheels.length <= 1) {
+        throw new Error("The last wheel cannot be deleted");
+      }
+
+      const nextWheels = deleteItemFromArray(state.wheels, id);
+      let selectedWheelId: string | undefined = state.selectedWheelId;
+
+      if (id === selectedWheelId) {
+        const deletedIndex = state.wheels.findIndex(
+          ({ id: wheelId }) => wheelId === id
+        );
+        const index = Math.min(deletedIndex, nextWheels.length - 1);
+        selectedWheelId = index >= 0 ? nextWheels[index].id : undefined;
+        console.log("Changing selected wheel!", selectedWheelId);
+      }
+
       return {
         ...state,
-        wheels: deleteItemFromArray(state.wheels, id),
+        wheels: nextWheels,
+        selectedWheelId,
+      };
+    }
+    case "SELECT_WHEEL": {
+      const { id } = action as SelectWheelAction;
+      return {
+        ...state,
+        selectedWheelId: id,
       };
     }
     default:
@@ -215,12 +241,14 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
 }
 
 export function useWheels(initialState = defaultState) {
-  const [{ wheels, currentWheelId, isSpinning }, dispatch] = useReducer(
+  const [{ wheels, selectedWheelId, isSpinning }, dispatch] = useReducer(
     reducer,
     initialState
   );
 
-  const selectedWheel = wheels.find(({ id }) => id === currentWheelId) as Wheel;
+  const selectedWheel = wheels.find(
+    ({ id }) => id === selectedWheelId
+  ) as Wheel;
 
   return {
     dispatch,

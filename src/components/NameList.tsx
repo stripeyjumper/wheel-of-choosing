@@ -9,6 +9,9 @@ interface NameListProps {
   onChange: (id: string, label: string) => void;
   onDelete: (id: string) => void;
   onCreate: (label: string) => void;
+  onSelect: () => void;
+  onDeleteWheel: () => void;
+  canDeleteWheel: boolean;
 }
 
 const ListContainer = styled.div`
@@ -25,16 +28,32 @@ const ListTitleContainer = styled.div`
   }
 `;
 
+const DeleteButton = styled.button``;
+
 function NameList({
   wheel: { label, segments },
   onChange,
   onDelete,
   onCreate,
+  onSelect,
+  onDeleteWheel,
+  canDeleteWheel,
 }: NameListProps) {
   return (
-    <ListContainer>
+    <ListContainer onClick={onSelect}>
       <ListTitleContainer>
         <h2>{label}</h2>
+        <DeleteButton
+          type="button"
+          disabled={!canDeleteWheel}
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log("Delete!");
+            onDeleteWheel();
+          }}
+        >
+          Delete
+        </DeleteButton>
       </ListTitleContainer>
       {segments.map(({ id, label, removed }) => {
         return (
@@ -68,7 +87,7 @@ const InputRow = styled.div`
 
 const ReadOnlyInput = styled.p<any>`
   margin: 0;
-  padding: 0.2em;
+  padding: 0.1em;
   font-size: 10pt;
   font-family: sans-serif;
   border: 1px solid transparent;
@@ -77,11 +96,16 @@ const ReadOnlyInput = styled.p<any>`
 
 const StyledInput = styled(AutosizeInput)`
   margin: 0;
-  padding: 0.2em;
+  padding: 0.1em;
   font-size: 10pt;
   font-family: sans-serif;
   border: 1px solid transparent;
   outline: none;
+  input {
+    outline: none;
+    border: 0;
+    padding: 0;
+  }
 `;
 
 function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
@@ -100,7 +124,9 @@ function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
   );
 
   const handleBlur = useCallback(() => setHasFocus(false), []);
-  const handleFocus = useCallback(() => setHasFocus(true), []);
+  const handleFocus = useCallback((e) => {
+    setHasFocus(true);
+  }, []);
 
   useEffect(() => {
     if (hasFocus && inputRef.current) {
@@ -110,13 +136,14 @@ function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
 
   return (
     <InputRow onBlur={handleBlur} onClick={handleFocus}>
-      {hasFocus ? (
+      {hasFocus || name === "toot 1" ? (
         <>
           <StyledInput
             ref={inputRef}
             type="text"
             value={name}
             onChange={handleChange}
+            onFocus={handleFocus}
           />
         </>
       ) : (

@@ -24,7 +24,7 @@ export interface Wheel {
 
 export interface WheelManagerState {
   wheels: Wheel[];
-  currentWheelId: string;
+  selectedWheelId?: string;
   isSpinning: boolean;
 }
 
@@ -65,5 +65,10 @@ export interface UpdateWheelAction extends Action {
 
 export interface DeleteWheelAction extends Action {
   type: "DELETE_WHEEL";
+  id: string;
+}
+
+export interface SelectWheelAction extends Action {
+  type: "SELECT_WHEEL";
   id: string;
 }
