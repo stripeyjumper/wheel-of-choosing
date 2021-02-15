@@ -9,6 +9,7 @@ import {
   DeleteSegmentAction,
   ResetWheelAction,
 } from "./types";
+import { getRandomInteger } from "./get-random-integer";
 
 const defaultWheelId = uuid();
 
@@ -16,7 +17,13 @@ const defaultState: WheelManagerState = {
   wheels: [
     {
       id: defaultWheelId,
-      segments: [{ id: uuid(), label: "toot" }],
+      segments: [
+        { id: uuid(), label: "toot 1" },
+        { id: uuid(), label: "toot 2" },
+        { id: uuid(), label: "toot 3" },
+        { id: uuid(), label: "toot 4" },
+        { id: uuid(), label: "toot 5" },
+      ],
     },
   ],
   currentWheelId: defaultWheelId,
@@ -45,10 +52,6 @@ function deleteItemFromArray<TItem extends { id: any }>(
   result.splice(index, 1);
 
   return result;
-}
-
-function getRandomInteger(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function reducer(state: WheelManagerState, action: Action): WheelManagerState {

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import WheelSegment from "./WheelSegment";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
-
+import { getRandomInteger } from "./get-random-integer";
 interface WheelProps {
   segments: { id: string; label: string; color: string; selected?: boolean }[];
   onSpinStart: () => void;
@@ -17,12 +17,6 @@ const WheelGroup = motion.g;
 
 function mod(n: number, m: number) {
   return ((n % m) + m) % m;
-}
-
-function getRandomInteger(min: number, max: number) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function getWheelAngle(
@@ -50,7 +44,8 @@ function getWheelAngle(
 }
 
 function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
-  const spinAngle = useSpring(0, { duration: 2000 });
+  const duration = 2000;
+  const spinAngle = useSpring(0, { duration });
   const segmentAngle = (2 * Math.PI) / segments.length;
 
   const { radius } = defaultProps;
@@ -65,14 +60,14 @@ function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
       spinAngle.set(
         getWheelAngle(spinAngle.get(), selectedIndex, segments.length)
       );
+      setTimeout(onSpinEnd, duration);
     }
-  }, [isSpinning, spinAngle, segments]);
+  }, [isSpinning, spinAngle, onSpinEnd, segments]);
 
   const rotate = useMotionTemplate`${spinAngle}rad`;
 
   return (
     <>
-      <p>{isSpinning ? "Spinning!" : "Not spinning"}</p>
       <svg
         width="600"
         height="400"
@@ -88,7 +83,6 @@ function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
             `rotate(${rotate}) translate(${x}, ${y})`
           }
           style={{ originX: "100px", originY: "100px" }}
-          onAnimationEnd={onSpinEnd}
         >
           {segments.map(({ id, label, color, selected }, i) => {
             const rotation = i * segmentAngle;
