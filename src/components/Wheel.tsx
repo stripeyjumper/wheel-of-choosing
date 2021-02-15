@@ -19,10 +19,34 @@ function mod(n: number, m: number) {
   return ((n % m) + m) % m;
 }
 
-function getRandomInt(min: number, max: number) {
+function getRandomInteger(min: number, max: number) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getWheelAngle(
+  prevAngle: number,
+  selectedIndex: number,
+  totalSegments: number
+) {
+  const twoPi = 2 * Math.PI;
+  const segmentAngle = twoPi / totalSegments;
+
+  // Add a bit of random jitter to the final position, without changing the outcome
+  const jitter =
+    (Math.random() - 0.5) * segmentAngle * (totalSegments > 1 ? 0.75 : 0.1);
+
+  const prevSpinAngle = mod(prevAngle, twoPi);
+  const nextSpinAngle = mod(selectedIndex * segmentAngle * -1, twoPi);
+
+  // Get the clockwise angle between the previous and next segments
+  const diff = mod(nextSpinAngle - prevSpinAngle, twoPi);
+
+  // Add a random number of complete rotations
+  const additionalSpins = twoPi * getRandomInteger(1, 4);
+
+  return prevAngle + diff + jitter + additionalSpins;
 }
 
 function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
@@ -33,27 +57,19 @@ function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
 
   useEffect(() => {
     if (isSpinning) {
-      const index = Math.max(
+      const selectedIndex = Math.max(
         segments.findIndex(({ selected }) => selected),
         0
       );
 
-      const twoPi = 2 * Math.PI;
-      const angle = twoPi / segments.length;
-
-      const wobble =
-        (Math.random() - 0.5) * angle * (segments.length > 1 ? 0.75 : 0.1);
-
-      const prevSpinAngle = mod(spinAngle.get(), twoPi);
-      const nextSpinAngle = mod(index * angle * -1, twoPi);
-      const diff = mod(nextSpinAngle - prevSpinAngle, twoPi);
       spinAngle.set(
-        spinAngle.get() + diff + wobble + twoPi * getRandomInt(1, 4)
+        getWheelAngle(spinAngle.get(), selectedIndex, segments.length)
       );
     }
   }, [isSpinning, spinAngle, segments]);
 
-  const transform = useMotionTemplate`rotate(${spinAngle}rad) translate(100px, 100px)`;
+  const rotate = useMotionTemplate`${spinAngle}rad`;
+
   return (
     <>
       <p>{isSpinning ? "Spinning!" : "Not spinning"}</p>
@@ -65,8 +81,12 @@ function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
       >
         <WheelGroup
           stroke="#666"
-          transform={transform}
-          transition={{ ease: "easeOut", duration: 4 }}
+          rotate={rotate}
+          x={100}
+          y={100}
+          transformTemplate={({ rotate, x, y }) =>
+            `rotate(${rotate}) translate(${x}, ${y})`
+          }
           style={{ originX: "100px", originY: "100px" }}
           onAnimationEnd={onSpinEnd}
         >
