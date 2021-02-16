@@ -32,7 +32,7 @@ const NameListContainer = styled.div`
 function App() {
   const { dispatch, wheels, selectedWheel } = useWheels();
 
-  const { id: selectedWheelId, segments, isSpinning } = selectedWheel;
+  const { id: selectedWheelId, label, segments, isSpinning } = selectedWheel;
 
   const segmentsWithColors = useMemo(() => {
     const colors = getColors(segments.length, baseColors);
@@ -88,9 +88,12 @@ function App() {
     [dispatch]
   );
 
-  const handleReset = useCallback(() => {
-    dispatch({ type: "RESET_WHEEL", id: selectedWheelId } as ResetWheelAction);
-  }, [dispatch, selectedWheelId]);
+  const handleReset = useCallback(
+    (id: string) => () => {
+      dispatch({ type: "RESET_WHEEL", id } as ResetWheelAction);
+    },
+    [dispatch]
+  );
 
   const handleCreateWheel = useCallback(
     () => dispatch({ type: "CREATE_WHEEL" }),
@@ -132,10 +135,13 @@ function App() {
               onSelect={handleSelect(wheel.id)}
               onDeleteWheel={handleDeleteWheel(wheel.id)}
               canDeleteWheel={wheels.length > 1}
+              onResetWheel={handleReset(wheel.id)}
             />
           ))}
         </NameListContainer>
         <Wheel
+          key={selectedWheelId}
+          label={label}
           segments={visibleSegments}
           onSpinStart={handleSpinStart}
           onSpinEnd={handleSpinEnd}
@@ -144,9 +150,6 @@ function App() {
       </Container>
       <button onClick={handleCreateWheel} type="button">
         Add wheel
-      </button>
-      <button onClick={handleReset} type="button">
-        Reset
       </button>
     </div>
   );

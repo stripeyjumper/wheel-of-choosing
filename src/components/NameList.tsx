@@ -12,6 +12,7 @@ interface NameListProps {
   onSelect: () => void;
   onDeleteWheel: () => void;
   canDeleteWheel: boolean;
+  onResetWheel: () => void;
 }
 
 const ListContainer = styled.div`
@@ -19,6 +20,7 @@ const ListContainer = styled.div`
   flex-direction: column;
   padding: 1rem;
   margin: 1rem;
+  margin-top: 0;
   border: 1px solid #ddd;
 `;
 
@@ -28,7 +30,7 @@ const ListTitleContainer = styled.div`
   }
 `;
 
-const DeleteButton = styled.button``;
+const StyledButton = styled.button``;
 
 function NameList({
   wheel: { label, segments },
@@ -38,12 +40,13 @@ function NameList({
   onSelect,
   onDeleteWheel,
   canDeleteWheel,
+  onResetWheel,
 }: NameListProps) {
   return (
     <ListContainer onClick={onSelect}>
       <ListTitleContainer>
         <h2>{label}</h2>
-        <DeleteButton
+        <StyledButton
           type="button"
           disabled={!canDeleteWheel}
           onClick={(e) => {
@@ -53,7 +56,10 @@ function NameList({
           }}
         >
           Delete
-        </DeleteButton>
+        </StyledButton>
+        <StyledButton type="button" onClick={onResetWheel}>
+          Reset
+        </StyledButton>
       </ListTitleContainer>
       {segments.map(({ id, label, removed }) => {
         return (
@@ -94,7 +100,7 @@ const ReadOnlyInput = styled.p<any>`
   text-decoration: ${({ removed }) => (removed ? "line-through" : "none")};
 `;
 
-const StyledInput = styled(AutosizeInput)`
+const StyledInput = styled<any>(AutosizeInput)`
   margin: 0;
   padding: 0.1em;
   font-size: 10pt;
@@ -105,6 +111,7 @@ const StyledInput = styled(AutosizeInput)`
     outline: none;
     border: 0;
     padding: 0;
+    text-decoration: ${({ removed }) => (removed ? "line-through" : "none")};
   }
 `;
 
@@ -114,13 +121,9 @@ function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
 
   const handleChange = useCallback(
     (e) => {
-      if (e.target.value) {
-        onNameChanged(e.target.value);
-      } else {
-        onDelete();
-      }
+      onNameChanged(e.target.value);
     },
-    [onNameChanged, onDelete]
+    [onNameChanged]
   );
 
   const handleBlur = useCallback(() => setHasFocus(false), []);
@@ -144,6 +147,7 @@ function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
             value={name}
             onChange={handleChange}
             onFocus={handleFocus}
+            removed={removed}
           />
         </>
       ) : (

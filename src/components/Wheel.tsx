@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import WheelSegment from "./WheelSegment";
+import WheelSegment, { EmptyWheel } from "./WheelSegment";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
 import { getRandomInteger } from "./get-random-integer";
 import styled from "styled-components";
@@ -8,6 +8,7 @@ interface WheelProps {
   onSpinStart: () => void;
   onSpinEnd: () => void;
   isSpinning: boolean;
+  label?: string;
 }
 
 const defaultProps = {
@@ -56,7 +57,13 @@ function getWheelAngle(
   return prevAngle + diff + jitter + additionalSpins;
 }
 
-function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
+function Wheel({
+  label,
+  segments,
+  onSpinStart,
+  onSpinEnd,
+  isSpinning,
+}: WheelProps) {
   const duration = 2000;
   const spinAngle = useSpring(0, { duration });
   const segmentAngle = (2 * Math.PI) / segments.length;
@@ -97,27 +104,34 @@ function Wheel({ segments, onSpinStart, onSpinEnd, isSpinning }: WheelProps) {
           }
           style={{ originX: "100px", originY: "100px" }}
         >
-          {segments.map(({ id, label, color, selected }, i) => {
-            const rotation = i * segmentAngle;
+          {segments.length ? (
+            segments.map(({ id, label, color, selected }, i) => {
+              const rotation = i * segmentAngle;
 
-            return (
-              <WheelSegment
-                id={id}
-                radius={radius}
-                color={color}
-                rotation={rotation}
-                angle={segmentAngle}
-                label={`${label}`}
-                key={id}
-                onClick={onSpinStart}
-                selected={!isSpinning && !!selected}
-              />
-            );
-          })}
+              return (
+                <WheelSegment
+                  id={id}
+                  radius={radius}
+                  color={color}
+                  rotation={rotation}
+                  angle={segmentAngle}
+                  label={`${label}`}
+                  key={id}
+                  onClick={onSpinStart}
+                  selected={!isSpinning && !!selected}
+                />
+              );
+            })
+          ) : (
+            <EmptyWheel
+              radius={radius}
+              label={`Add some names to ${label || "the wheel"}...`}
+            />
+          )}
         </WheelGroup>
       </svg>
       <SpinButton
-        disabled={isSpinning || segments.length === 1}
+        disabled={isSpinning || segments.length <= 1}
         onClick={onSpinStart}
       >
         Spin

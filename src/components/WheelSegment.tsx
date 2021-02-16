@@ -13,12 +13,20 @@ const SegmentPath = styled.path`
 
 const SegmentLabel = styled.text<any>`
   font-family: sans-serif;
-  font-size: 6pt;
+  font-size: 8pt;
   font-weight: normal;
   ${({ hideLabel, selected }) => css`
     fill: ${hideLabel ? "transparent" : selected ? "blue" : "black"};
   `}
   stroke: none;
+`;
+
+const NoItemsLabel = styled.text`
+  text-anchor: middle;
+  stroke: none;
+  font-size: 6pt;
+  font-weight: normal;
+  fill: #555;
 `;
 
 interface SegmentProps {
@@ -47,6 +55,21 @@ function getCoordinates(radius: number, angle: number) {
   const x = radius * Math.cos(angle);
   const y = radius * Math.sin(angle);
   return [x, y];
+}
+
+export function EmptyWheel({
+  radius,
+  label,
+}: {
+  radius: number;
+  label: string;
+}) {
+  return (
+    <>
+      <SegmentCircle r={radius} fill="#eee" stroke="#ccc" />
+      <NoItemsLabel>{label}</NoItemsLabel>
+    </>
+  );
 }
 
 function WheelSegment({
