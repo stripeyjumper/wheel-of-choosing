@@ -1,8 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 import { Wheel } from "./types";
 import CreateNameInput from "./CreateNameInput";
 import AutosizeInput from "react-input-autosize";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrashAlt } from "@fortawesome/free-regular-svg-icons";
+import { faTimes, faUndo } from "@fortawesome/free-solid-svg-icons";
 
 interface NameListProps {
   wheel: Wheel;
@@ -20,9 +29,9 @@ const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  margin: 1rem;
-  margin-top: 0;
+  margin-bottom: 1rem;
   border: 1px solid #ddd;
+  min-width: 15rem;
 `;
 
 const ListTitleContainer = styled.div`
@@ -31,7 +40,14 @@ const ListTitleContainer = styled.div`
   }
 `;
 
-const StyledButton = styled.button``;
+const StyledButton = styled.button`
+  border: none;
+  background-color: transparent;
+  color: #777;
+  :hover:not(:disabled) {
+    color: black;
+  }
+`;
 
 const WheelNameInput = styled<any>(AutosizeInput)`
   display: block;
@@ -62,12 +78,22 @@ function NameList({
   onResetWheel,
   onUpdateWheel,
 }: NameListProps) {
-  const onNameChange = useCallback((e) => onUpdateWheel(e.target.value), []);
+  const onNameChange = useCallback((e) => onUpdateWheel(e.target.value), [
+    onUpdateWheel,
+  ]);
+
+  const canResetWheel = useMemo(
+    () => !segments.every(({ removed, selected }) => !removed && !selected),
+    [segments]
+  );
 
   return (
     <ListContainer onClick={onSelect}>
       <WheelNameInput value={label} onChange={onNameChange} />
       <ListTitleContainer>
+        <StyledButton type="button">
+          <FontAwesomeIcon icon={faEdit} />
+        </StyledButton>
         <StyledButton
           type="button"
           disabled={!canDeleteWheel}
@@ -76,10 +102,14 @@ function NameList({
             onDeleteWheel();
           }}
         >
-          Delete
+          <FontAwesomeIcon icon={faTrashAlt} />
         </StyledButton>
-        <StyledButton type="button" onClick={onResetWheel}>
-          Reset
+        <StyledButton
+          type="button"
+          onClick={onResetWheel}
+          disabled={!canResetWheel}
+        >
+          <FontAwesomeIcon icon={faUndo} />
         </StyledButton>
       </ListTitleContainer>
       {segments.map(({ id, label, removed }) => {
@@ -108,17 +138,9 @@ interface NameInputProps {
 const InputRow = styled.div`
   display: flex;
   flex-direction: row;
-  width: 200px;
+  align-content: space-between;
+  width: 100%;
   padding: 0.2rem;
-`;
-
-const ReadOnlyInput = styled.p<any>`
-  margin: 0;
-  padding: 0.1em;
-  font-size: 10pt;
-  font-family: sans-serif;
-  border: 1px solid transparent;
-  text-decoration: ${({ removed }) => (removed ? "line-through" : "none")};
 `;
 
 const StyledInput = styled<any>(AutosizeInput)`
@@ -136,7 +158,7 @@ const StyledInput = styled<any>(AutosizeInput)`
   }
 `;
 
-function NameInput({ name, onNameChanged, removed }: NameInputProps) {
+function NameInput({ name, onNameChanged, removed, onDelete }: NameInputProps) {
   const inputRef = useRef<any>(null);
   const [hasFocus, setHasFocus] = useState(false);
 
@@ -168,6 +190,9 @@ function NameInput({ name, onNameChanged, removed }: NameInputProps) {
         onFocus={handleFocus}
         removed={removed}
       />
+      <StyledButton onClick={onDelete} style={{ marginLeft: "auto" }}>
+        <FontAwesomeIcon icon={faTimes} />
+      </StyledButton>
     </InputRow>
   );
 }

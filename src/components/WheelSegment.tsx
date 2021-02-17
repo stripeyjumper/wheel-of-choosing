@@ -24,7 +24,7 @@ const SegmentLabel = styled.text<any>`
 const NoItemsLabel = styled.text`
   text-anchor: middle;
   stroke: none;
-  font-size: 6pt;
+  font-size: 8pt;
   font-weight: normal;
   fill: #555;
 `;

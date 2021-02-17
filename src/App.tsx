@@ -13,6 +13,8 @@ import {
   UpdateWheelAction,
 } from "./components/types";
 import { useWheels } from "./components/use-wheels";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const baseColors = ["#488f31", "#ffe48f", "#de425b", "#22a3bd"];
 
@@ -28,6 +30,16 @@ const Container = styled.div`
 const NameListContainer = styled.div`
   display: flex;
   flex-direction: column;
+  padding-left: 1rem;
+  padding-right: 1rem;
+`;
+
+const AddWheelButton = styled.button`
+  padding: 0.2rem;
+  border-radius: 0.3rem;
+  > svg {
+    margin-left: 0.5rem;
+  }
 `;
 
 function App() {
@@ -151,6 +163,10 @@ function App() {
               onUpdateWheel={handleUpdateWheel(wheel.id)}
             />
           ))}
+          <AddWheelButton onClick={handleCreateWheel} type="button">
+            New wheel
+            <FontAwesomeIcon icon={faPlus} />
+          </AddWheelButton>
         </NameListContainer>
         <Wheel
           key={selectedWheelId}
@@ -161,9 +177,6 @@ function App() {
           isSpinning={isSpinning}
         />
       </Container>
-      <button onClick={handleCreateWheel} type="button">
-        Add wheel
-      </button>
     </div>
   );
 }

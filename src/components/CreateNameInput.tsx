@@ -1,3 +1,5 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useRef, useState } from "react";
 import styled from "styled-components";
 
@@ -46,7 +48,9 @@ function CreateNameInput({ onCreate }: CreateNameInputProps) {
         placeholder="Type to add a name"
         ref={inputRef}
       />
-      <StyledButton type="submit">Add</StyledButton>
+      <StyledButton type="submit" disabled={!value}>
+        <FontAwesomeIcon icon={faPlus} />
+      </StyledButton>
     </StyledForm>
   );
 }
