@@ -72,3 +72,9 @@ export interface SelectWheelAction extends Action {
   type: "SELECT_WHEEL";
   id: string;
 }
+
+export interface UpdateWheelAction extends Action {
+  type: "UPDATE_WHEEL";
+  id: string;
+  label: string;
+}

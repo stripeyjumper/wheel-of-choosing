@@ -10,6 +10,7 @@ import {
   ResetWheelAction,
   SelectWheelAction,
   UpdateSegmentAction,
+  UpdateWheelAction,
 } from "./components/types";
 import { useWheels } from "./components/use-wheels";
 
@@ -118,10 +119,21 @@ function App() {
     [dispatch]
   );
 
+  const handleUpdateWheel = useCallback(
+    (id: string) => (name: string) => {
+      dispatch({
+        type: "UPDATE_WHEEL",
+        id,
+        label: name,
+      } as UpdateWheelAction);
+    },
+    [dispatch]
+  );
+
   return (
     <div className="App">
       <header className="App-header">
-        <Heading>Wheel of choosing</Heading>
+        <Heading>{label || "Wheel of choosing"}</Heading>
       </header>
       <Container>
         <NameListContainer>
@@ -136,6 +148,7 @@ function App() {
               onDeleteWheel={handleDeleteWheel(wheel.id)}
               canDeleteWheel={wheels.length > 1}
               onResetWheel={handleReset(wheel.id)}
+              onUpdateWheel={handleUpdateWheel(wheel.id)}
             />
           ))}
         </NameListContainer>

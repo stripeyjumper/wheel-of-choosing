@@ -13,6 +13,7 @@ interface NameListProps {
   onDeleteWheel: () => void;
   canDeleteWheel: boolean;
   onResetWheel: () => void;
+  onUpdateWheel: (label: string) => void;
 }
 
 const ListContainer = styled.div`
@@ -32,6 +33,24 @@ const ListTitleContainer = styled.div`
 
 const StyledButton = styled.button``;
 
+const WheelNameInput = styled<any>(AutosizeInput)`
+  display: block;
+  margin: 0;
+  padding: 0.1em;
+  font-size: 10pt;
+  font-family: sans-serif;
+  border: 1px solid transparent;
+  outline: none;
+  input {
+    font-size: 16pt;
+    font-weight: bold;
+    outline: none;
+    border: 0;
+    padding: 0;
+    text-decoration: ${({ removed }) => (removed ? "line-through" : "none")};
+  }
+`;
+
 function NameList({
   wheel: { label, segments },
   onChange,
@@ -41,17 +60,19 @@ function NameList({
   onDeleteWheel,
   canDeleteWheel,
   onResetWheel,
+  onUpdateWheel,
 }: NameListProps) {
+  const onNameChange = useCallback((e) => onUpdateWheel(e.target.value), []);
+
   return (
     <ListContainer onClick={onSelect}>
+      <WheelNameInput value={label} onChange={onNameChange} />
       <ListTitleContainer>
-        <h2>{label}</h2>
         <StyledButton
           type="button"
           disabled={!canDeleteWheel}
           onClick={(e) => {
             e.stopPropagation();
-            console.log("Delete!");
             onDeleteWheel();
           }}
         >
@@ -115,7 +136,7 @@ const StyledInput = styled<any>(AutosizeInput)`
   }
 `;
 
-function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
+function NameInput({ name, onNameChanged, removed }: NameInputProps) {
   const inputRef = useRef<any>(null);
   const [hasFocus, setHasFocus] = useState(false);
 
@@ -139,20 +160,14 @@ function NameInput({ name, onNameChanged, onDelete, removed }: NameInputProps) {
 
   return (
     <InputRow onBlur={handleBlur} onClick={handleFocus}>
-      {hasFocus || name === "toot 1" ? (
-        <>
-          <StyledInput
-            ref={inputRef}
-            type="text"
-            value={name}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            removed={removed}
-          />
-        </>
-      ) : (
-        <ReadOnlyInput removed={removed}>{name}</ReadOnlyInput>
-      )}
+      <StyledInput
+        ref={inputRef}
+        type="text"
+        value={name}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        removed={removed}
+      />
     </InputRow>
   );
 }

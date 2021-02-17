@@ -21,13 +21,13 @@ const defaultState: WheelManagerState = {
   wheels: [
     {
       id: defaultWheelId,
-      label: "Wheel 1",
+      label: "Wheel of choosing",
       segments: [
-        { id: uuid(), label: "toot 1" },
-        { id: uuid(), label: "toot 2" },
-        { id: uuid(), label: "toot 3" },
-        { id: uuid(), label: "toot 4" },
-        { id: uuid(), label: "toot 5" },
+        { id: uuid(), label: "Name 1" },
+        { id: uuid(), label: "Name 2" },
+        { id: uuid(), label: "Name 3" },
+        { id: uuid(), label: "Name 4" },
+        { id: uuid(), label: "Name 5" },
       ],
       isSpinning: false,
     },
