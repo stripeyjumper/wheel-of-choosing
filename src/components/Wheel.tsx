@@ -11,6 +11,10 @@ interface WheelProps {
   label?: string;
 }
 
+const Heading = styled.h1`
+  text-align: center;
+`;
+
 const defaultProps = {
   radius: 90,
 };
@@ -88,6 +92,7 @@ function Wheel({
 
   return (
     <WheelContainer>
+      <Heading>{label || "Wheel of choosing"}</Heading>
       <svg
         width="600"
         height="400"

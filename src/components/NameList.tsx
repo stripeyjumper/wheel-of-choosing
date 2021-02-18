@@ -35,9 +35,7 @@ const ListContainer = styled.div`
 `;
 
 const ListTitleContainer = styled.div`
-  h2 {
-    margin-top: 0;
-  }
+  margin-bottom: 1rem;
 `;
 
 const StyledButton = styled.button`

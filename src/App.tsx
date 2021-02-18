@@ -18,10 +18,6 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const baseColors = ["#488f31", "#ffe48f", "#de425b", "#22a3bd"];
 
-const Heading = styled.h1`
-  text-align: center;
-`;
-
 const Container = styled.div`
   display: flex;
   flex-direction: row;
@@ -32,6 +28,7 @@ const NameListContainer = styled.div`
   flex-direction: column;
   padding-left: 1rem;
   padding-right: 1rem;
+  margin-top: 5rem;
 `;
 
 const AddWheelButton = styled.button`
@@ -144,9 +141,6 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <Heading>{label || "Wheel of choosing"}</Heading>
-      </header>
       <Container>
         <NameListContainer>
           {wheels.map((wheel) => (

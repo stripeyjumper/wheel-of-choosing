@@ -16,7 +16,7 @@ const SegmentLabel = styled.text<any>`
   font-size: 8pt;
   font-weight: normal;
   ${({ hideLabel, selected }) => css`
-    fill: ${hideLabel ? "transparent" : selected ? "blue" : "black"};
+    fill: ${hideLabel ? "transparent" : selected ? "white" : "black"};
   `}
   stroke: none;
 `;
