@@ -99,7 +99,7 @@ function WheelSegment({
       const scale =
         dimensions.width > maxLength ? maxLength / dimensions.width : 1;
 
-      const offset = Math.max(20, radius - 5 - dimensions.width);
+      const offset = Math.max(15, radius - 10 - dimensions.width);
 
       setTextState({
         scale,

@@ -3,6 +3,9 @@ import WheelSegment, { EmptyWheel } from "./WheelSegment";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
 import { getRandomInteger } from "./get-random-integer";
 import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHandPointLeft } from "@fortawesome/free-solid-svg-icons";
+
 interface WheelProps {
   segments: { id: string; label: string; color: string; selected?: boolean }[];
   onSpinStart: () => void;
@@ -46,8 +49,8 @@ function getWheelAngle(
   const segmentAngle = twoPi / totalSegments;
 
   // Add a bit of random jitter to the final position, without changing the outcome
-  const jitter =
-    (Math.random() - 0.5) * segmentAngle * (totalSegments > 1 ? 0.75 : 0.1);
+  const maxJitter = Math.min(0.8, segmentAngle * 0.8);
+  const jitter = (Math.random() - 0.5) * maxJitter;
 
   const prevSpinAngle = mod(prevAngle, twoPi);
   const nextSpinAngle = mod(selectedIndex * segmentAngle * -1, twoPi);
@@ -100,7 +103,6 @@ function Wheel({
         viewBox="0 0 200 200"
       >
         <WheelGroup
-          stroke="#666"
           rotate={rotate}
           x={100}
           y={100}
@@ -134,6 +136,13 @@ function Wheel({
             />
           )}
         </WheelGroup>
+        <FontAwesomeIcon
+          icon={faHandPointLeft}
+          width={20}
+          height={20}
+          x={185}
+          y={92}
+        />
       </svg>
       <SpinButton
         disabled={isSpinning || segments.length <= 1}
