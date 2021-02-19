@@ -178,18 +178,19 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
     }
     case "CREATE_WHEEL": {
       const { label } = action as CreateWheelAction;
-
+      const id = uuid();
       return {
         ...state,
         wheels: [
           ...state.wheels,
           {
-            id: uuid(),
+            id,
             label: label || `Wheel ${state.wheels.length + 1}`,
             segments: [],
             isSpinning: false,
           },
         ],
+        selectedWheelId: id,
       };
     }
     case "UPDATE_WHEEL": {

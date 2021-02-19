@@ -21,6 +21,7 @@ const baseColors = ["#488f31", "#ffe48f", "#de425b", "#22a3bd"];
 const Container = styled.div`
   display: flex;
   flex-direction: row;
+  width: 100%;
 `;
 
 const NameListContainer = styled.div`
@@ -142,6 +143,14 @@ function App() {
   return (
     <div className="App">
       <Container>
+        <Wheel
+          key={selectedWheelId}
+          label={label}
+          segments={visibleSegments}
+          onSpinStart={handleSpinStart}
+          onSpinEnd={handleSpinEnd}
+          isSpinning={isSpinning}
+        />
         <NameListContainer>
           {wheels.map((wheel) => (
             <NameList
@@ -162,14 +171,6 @@ function App() {
             <FontAwesomeIcon icon={faPlus} />
           </AddWheelButton>
         </NameListContainer>
-        <Wheel
-          key={selectedWheelId}
-          label={label}
-          segments={visibleSegments}
-          onSpinStart={handleSpinStart}
-          onSpinEnd={handleSpinEnd}
-          isSpinning={isSpinning}
-        />
       </Container>
     </div>
   );

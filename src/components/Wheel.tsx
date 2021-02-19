@@ -16,6 +16,7 @@ interface WheelProps {
 
 const Heading = styled.h1`
   text-align: center;
+  margin-bottom: 1rem;
 `;
 
 const defaultProps = {
@@ -34,6 +35,7 @@ const SpinButton = styled.button`
 const WheelContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 
 function mod(n: number, m: number) {
@@ -97,19 +99,19 @@ function Wheel({
     <WheelContainer>
       <Heading>{label || "Wheel of choosing"}</Heading>
       <svg
-        width="600"
+        width="100%"
         height="400"
         style={{ position: "relative", pointerEvents: "none" }}
-        viewBox="0 0 200 200"
+        viewBox="0 0 220 200"
       >
         <WheelGroup
           rotate={rotate}
-          x={100}
+          x={110}
           y={100}
           transformTemplate={({ rotate, x, y }) =>
             `rotate(${rotate}) translate(${x}, ${y})`
           }
-          style={{ originX: "100px", originY: "100px" }}
+          style={{ originX: "110px", originY: "100px" }}
         >
           {segments.length ? (
             segments.map(({ id, label, color, selected }, i) => {
@@ -130,17 +132,14 @@ function Wheel({
               );
             })
           ) : (
-            <EmptyWheel
-              radius={radius}
-              label={`Add some names to ${label || "the wheel"}...`}
-            />
+            <EmptyWheel radius={radius} label="Add some names..." />
           )}
         </WheelGroup>
         <FontAwesomeIcon
           icon={faHandPointLeft}
           width={20}
           height={20}
-          x={185}
+          x={195}
           y={92}
         />
       </svg>
