@@ -1,0 +1,14 @@
+{
+  "name": "wheel-of-choosing-api",
+  "version": "1.0.0",
+  "description": "API for wheel of choosing site",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless": "^2.25.2"
+  }
+}
