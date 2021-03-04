@@ -59,14 +59,17 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: src/handler.hello
-    #    The following are a few example events you can configure
-    #    NOTE: Please make sure to change your handler code to work with those events
-    #    Check the event documentation for details
+  getWheels:
+    handler: src/save-wheels/handler.saveWheels
     events:
       - httpApi:
-          path: /api/hello
+          path: /api/wheels
+          method: put
+  saveWheels:
+    handler: src/get-wheels/handler.getWheels
+    events:
+      - httpApi:
+          path: /api/wheels
           method: get
 #      - websocket: $connect
 #      - s3: ${env:BUCKET}
