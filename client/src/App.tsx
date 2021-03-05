@@ -16,12 +16,16 @@ import { useWheels } from "./components/use-wheels";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-const baseColors = ["#488f31", "#ffe48f", "#de425b", "#22a3bd"];
+const baseColors = ["#2a4257", "#407f61", "#dec752", "#d27c3f", "#e75449"];
 
 const Container = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
 `;
 
 const NameListContainer = styled.div`
@@ -33,11 +37,20 @@ const NameListContainer = styled.div`
 `;
 
 const AddWheelButton = styled.button`
-  padding: 0.2rem;
-  border-radius: 0.3rem;
-  > svg {
-    margin-left: 0.5rem;
+  width: 100%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0.5rem;
+  border: 3px solid #0a7b8d;
+  height: 3rem;
+  color: #0a7b8d;
+  :hover {
+    background-color: #0a7b8d;
+    color: white;
   }
+  font-size: 14pt;
+  outline: none;
 `;
 
 function App() {
@@ -167,8 +180,7 @@ function App() {
             />
           ))}
           <AddWheelButton onClick={handleCreateWheel} type="button">
-            New wheel
-            <FontAwesomeIcon icon={faPlus} />
+            <FontAwesomeIcon icon={faPlus} /> New wheel
           </AddWheelButton>
         </NameListContainer>
       </Container>

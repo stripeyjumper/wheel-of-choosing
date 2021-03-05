@@ -1,17 +1,11 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import styled from "styled-components";
 import { Wheel } from "./types";
-import CreateNameInput from "./CreateNameInput";
 import AutosizeInput from "react-input-autosize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-regular-svg-icons";
-import { faTimes, faUndo } from "@fortawesome/free-solid-svg-icons";
+import { faUndo } from "@fortawesome/free-solid-svg-icons";
+import TextareaAutosize from "react-textarea-autosize";
 
 interface NameListProps {
   wheel: Wheel;
@@ -32,6 +26,7 @@ const ListContainer = styled.div`
   margin-bottom: 1rem;
   border: 1px solid #ddd;
   min-width: 15rem;
+  border-radius: 1rem;
 `;
 
 const ListTitleContainer = styled.div`
@@ -50,11 +45,14 @@ const StyledButton = styled.button`
 const WheelNameInput = styled<any>(AutosizeInput)`
   display: block;
   margin: 0;
-  padding: 0.1em;
+  padding: 0.3rem 0.5rem;
   font-size: 10pt;
   font-family: sans-serif;
-  border: 1px solid transparent;
-  outline: none;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  :focus-within {
+    border: 2px solid #777;
+  }
   input {
     font-size: 16pt;
     font-weight: bold;
@@ -64,6 +62,33 @@ const WheelNameInput = styled<any>(AutosizeInput)`
     text-decoration: ${({ removed }) => (removed ? "line-through" : "none")};
   }
 `;
+
+const StyledTextArea = styled(TextareaAutosize)`
+  border: none;
+  font-family: inherit;
+  font-size: 12pt;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.5;
+  padding: 0.3rem 0.5rem;
+  border: 2px solid transparent;
+  border-radius: 0.7rem;
+  outline: none;
+  :focus-within {
+    border: 2px solid #777;
+  }
+`;
+
+function moveCursorToEnd(el: any) {
+  if (typeof el.selectionStart == "number") {
+    el.selectionStart = el.selectionEnd = el.value.length;
+  } else if (typeof el.createTextRange != "undefined") {
+    el.focus();
+    var range = el.createTextRange();
+    range.collapse(false);
+    range.select();
+  }
+}
 
 function NameList({
   wheel: { label, segments },
@@ -76,6 +101,9 @@ function NameList({
   onResetWheel,
   onUpdateWheel,
 }: NameListProps) {
+  const containerRef = useRef<any>(null);
+  const textAreaRef = useRef<any>(null);
+
   const onNameChange = useCallback((e) => onUpdateWheel(e.target.value), [
     onUpdateWheel,
   ]);
@@ -85,113 +113,98 @@ function NameList({
     [segments]
   );
 
+  const names = useMemo(() => {
+    return segments.map(({ label }) => label).join("\n");
+  }, [segments]);
+
+  const syncNames = useCallback(
+    (nextNames) => {
+      const count = Math.max(nextNames.length, segments.length);
+
+      for (let i = 0; i < count; i += 1) {
+        if (segments.length > i && nextNames.length > i) {
+          onChange(segments[i].id, nextNames[i]);
+        } else if (nextNames.length > i) {
+          onCreate(nextNames[i]);
+        } else {
+          onDelete(segments[i].id);
+        }
+      }
+    },
+    [segments, onCreate, onDelete, onChange]
+  );
+
+  const handleNamesChanged = useCallback(
+    (e) => {
+      const value = e.target.value || "";
+
+      const nextNames = value.trim().length === 0 ? [] : value.split("\n");
+
+      syncNames(nextNames);
+    },
+    [syncNames]
+  );
+
+  const handleBlur = useCallback(
+    (e) => {
+      const value = e.target.value || "";
+
+      const nextNames = value
+        .split("\n")
+        .map((name: string) => (name ? name.trim() : name))
+        .filter((name: string) => !!name);
+
+      syncNames(nextNames);
+    },
+    [syncNames]
+  );
+
+  const handleClick = useCallback(
+    (e) => {
+      if (textAreaRef.current && containerRef.current === e.target) {
+        textAreaRef.current?.focus();
+        moveCursorToEnd(textAreaRef.current);
+      }
+      onSelect();
+    },
+    [onSelect]
+  );
+
   return (
-    <ListContainer onClick={onSelect}>
+    <ListContainer onClick={handleClick} ref={containerRef}>
       <WheelNameInput value={label} onChange={onNameChange} />
       <ListTitleContainer>
         <StyledButton type="button">
-          <FontAwesomeIcon icon={faEdit} />
+          <FontAwesomeIcon icon={faEdit} /> Edit
         </StyledButton>
-        <StyledButton
-          type="button"
-          disabled={!canDeleteWheel}
-          onClick={(e) => {
-            e.stopPropagation();
-            onDeleteWheel();
-          }}
-        >
-          <FontAwesomeIcon icon={faTrashAlt} />
-        </StyledButton>
-        <StyledButton
-          type="button"
-          onClick={onResetWheel}
-          disabled={!canResetWheel}
-        >
-          <FontAwesomeIcon icon={faUndo} />
-        </StyledButton>
+        {canDeleteWheel ? (
+          <StyledButton
+            type="button"
+            disabled={!canDeleteWheel}
+            onClick={onDeleteWheel}
+          >
+            <FontAwesomeIcon icon={faTrashAlt} /> Delete
+          </StyledButton>
+        ) : null}
+        {canResetWheel ? (
+          <StyledButton
+            type="button"
+            onClick={onResetWheel}
+            disabled={!canResetWheel}
+          >
+            <FontAwesomeIcon icon={faUndo} /> Reset
+          </StyledButton>
+        ) : null}
       </ListTitleContainer>
-      {segments.map(({ id, label, removed }) => {
-        return (
-          <NameInput
-            key={id}
-            name={label}
-            onNameChanged={(value) => onChange(id, value)}
-            onDelete={() => onDelete(id)}
-            removed={!!removed}
-          />
-        );
-      })}
-      <CreateNameInput onCreate={onCreate} />
-    </ListContainer>
-  );
-}
-
-interface NameInputProps {
-  name: string;
-  removed: boolean;
-  onNameChanged: (value: string) => void;
-  onDelete: () => void;
-}
-
-const InputRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-content: space-between;
-  width: 100%;
-  padding: 0.2rem;
-`;
-
-const StyledInput = styled<any>(AutosizeInput)`
-  margin: 0;
-  padding: 0.1em;
-  font-size: 10pt;
-  font-family: sans-serif;
-  border: 1px solid transparent;
-  outline: none;
-  input {
-    outline: none;
-    border: 0;
-    padding: 0;
-    text-decoration: ${({ removed }) => (removed ? "line-through" : "none")};
-  }
-`;
-
-function NameInput({ name, onNameChanged, removed, onDelete }: NameInputProps) {
-  const inputRef = useRef<any>(null);
-  const [hasFocus, setHasFocus] = useState(false);
-
-  const handleChange = useCallback(
-    (e) => {
-      onNameChanged(e.target.value);
-    },
-    [onNameChanged]
-  );
-
-  const handleBlur = useCallback(() => setHasFocus(false), []);
-  const handleFocus = useCallback((e) => {
-    setHasFocus(true);
-  }, []);
-
-  useEffect(() => {
-    if (hasFocus && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [hasFocus]);
-
-  return (
-    <InputRow onBlur={handleBlur} onClick={handleFocus}>
-      <StyledInput
-        ref={inputRef}
-        type="text"
-        value={name}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        removed={removed}
+      <StyledTextArea
+        ref={textAreaRef}
+        key="text-area"
+        onChange={handleNamesChanged}
+        onBlur={handleBlur}
+        value={names}
+        spellCheck={false}
       />
-      <StyledButton onClick={onDelete} style={{ marginLeft: "auto" }}>
-        <FontAwesomeIcon icon={faTimes} />
-      </StyledButton>
-    </InputRow>
+    </ListContainer>
   );
 }
 

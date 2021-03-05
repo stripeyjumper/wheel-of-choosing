@@ -31,5 +31,5 @@ function getColor(angle: number, colors: Color[]) {
 
   const weight = (angle % anglePerColor) / anglePerColor;
 
-  return startColor.mix(endColor, weight).saturate(0.5);
+  return startColor.mix(endColor, weight).saturate(0.5).lighten(0.2);
 }

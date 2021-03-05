@@ -4,7 +4,7 @@ import { motion, useMotionTemplate, useSpring } from "framer-motion";
 import { getRandomInteger } from "./get-random-integer";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHandPointLeft } from "@fortawesome/free-solid-svg-icons";
+import { faHandPointLeft, faRedo } from "@fortawesome/free-solid-svg-icons";
 
 interface WheelProps {
   segments: { id: string; label: string; color: string; selected?: boolean }[];
@@ -30,14 +30,21 @@ const SpinButton = styled.button`
   text-align: center;
   margin-left: auto;
   margin-right: auto;
+  border-radius: 0.5rem;
+  border: none;
+  height: 3rem;
+  background-color: #0a7b8d;
+  border: 3px solid #0a7b8d;
+  color: white;
+  font-size: 14pt;
+  outline: none;
 `;
 
 const WheelContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: 100vh;
-  padding-bottom: 3rem;
+  max-height: calc(100vh - 3rem);
 `;
 
 function mod(n: number, m: number) {
@@ -149,7 +156,7 @@ function Wheel({
         disabled={isSpinning || segments.length <= 1}
         onClick={onSpinStart}
       >
-        Spin
+        <FontAwesomeIcon icon={faRedo} /> Spin
       </SpinButton>
     </WheelContainer>
   );
