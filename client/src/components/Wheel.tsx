@@ -36,6 +36,8 @@ const WheelContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-height: 100vh;
+  padding-bottom: 3rem;
 `;
 
 function mod(n: number, m: number) {
@@ -100,7 +102,7 @@ function Wheel({
       <Heading>{label || "Wheel of choosing"}</Heading>
       <svg
         width="100%"
-        height="400"
+        height="100%"
         style={{ position: "relative", pointerEvents: "none" }}
         viewBox="0 0 220 200"
       >
