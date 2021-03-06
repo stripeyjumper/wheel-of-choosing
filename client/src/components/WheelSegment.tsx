@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
+import { getContrastingTextColor } from "../get-colors";
 
 const SegmentCircle = styled.circle`
   vector-effect: non-scaling-stroke;
@@ -15,9 +16,6 @@ const SegmentLabel = styled.text<any>`
   font-family: "Varela Round", sans-serif;
   font-size: 8pt;
   font-weight: normal;
-  ${({ hideLabel, selected }) => css`
-    fill: ${hideLabel ? "transparent" : selected ? "white" : "black"};
-  `}
   stroke: none;
 `;
 
@@ -134,6 +132,7 @@ function WheelSegment({
         ref={labelRef}
         hideLabel={!textState}
         selected={selected}
+        fill={textState ? getContrastingTextColor(color) : "transparent"}
       >
         {label}
       </SegmentLabel>

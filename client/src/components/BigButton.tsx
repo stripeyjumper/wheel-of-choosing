@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 const BigButton = styled.button<any>`
+  font-family: "Varela Round", sans-serif;
   text-align: center;
   margin-left: auto;
   margin-right: auto;
@@ -13,7 +14,6 @@ const BigButton = styled.button<any>`
   font-size: 14pt;
   outline: none;
   padding: 1rem 3rem;
-
 `;
 
 export default BigButton;

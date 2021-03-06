@@ -24,8 +24,10 @@ interface WheelProps {
 
 const Heading = styled.h1`
   text-align: center;
-  margin-bottom: 1rem;
-  font-size: 30pt;
+  margin-bottom: 0;
+  font-size: 36pt;
+  font-weight: 700;
+  color: white;
 `;
 
 const defaultProps = {
@@ -35,7 +37,9 @@ const defaultProps = {
 const WheelGroup = motion.g;
 
 const SpinButton = styled(BigButton)`
-  width: 200px;
+  width: 300px;
+  background-color: #fa9f52;
+  border-color: #e86a00;
 `;
 
 const WheelContainer = styled.div`
@@ -75,6 +79,8 @@ function getWheelAngle(
 
 const ButtonRow = styled.div`
   display: flex;
+  align-items: flex-start;
+  align-content: stretch;
   flex-direction: row;
 `;
 
@@ -164,6 +170,8 @@ function Wheel({
         >
           <FontAwesomeIcon icon={faRedo} /> Spin
         </SpinButton>
+      </ButtonRow>
+      <ButtonRow>
         <BigButton onClick={onReset}>
           <FontAwesomeIcon icon={faUndo} /> Reset names
         </BigButton>{" "}

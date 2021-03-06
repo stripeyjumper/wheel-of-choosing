@@ -21,6 +21,15 @@ export function getColors(count: number, baseColors: string[]) {
   return results;
 }
 
+export function getContrastingTextColor(backgroundColor: string) {
+  const bgColor = new Color(backgroundColor);
+
+  const grayscale =
+    0.3 * bgColor.red() + 0.59 * bgColor.green() + 0.11 * bgColor.blue();
+
+  return grayscale > 192 ? "#444" : "#eee";
+}
+
 function getColor(angle: number, colors: Color[]) {
   const anglePerColor = (2 * Math.PI) / colors.length;
   const startIndex = Math.floor(angle / anglePerColor);

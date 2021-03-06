@@ -16,7 +16,7 @@ import { useWheels } from "./components/use-wheels";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-const baseColors = ["#2a4257", "#407f61", "#dec752", "#d27c3f", "#e75449"];
+const baseColors = ["#e75449", "#2a4257", "#407f61", "#dec752", "#d27c3f"];
 
 const Container = styled.div`
   display: flex;
@@ -65,6 +65,14 @@ function App() {
       color: colors[i],
     }));
   }, [segments]);
+
+  const wheelsWithColors = useMemo(() => {
+    const colors = getColors(wheels.length, baseColors);
+    return wheels.map((wheel, i) => ({
+      ...wheel,
+      color: colors[i],
+    }));
+  }, [wheels]);
 
   const visibleSegments = useMemo(
     () => segmentsWithColors.filter(({ removed }) => !removed),
@@ -179,10 +187,11 @@ function App() {
           isSpinning={isSpinning}
         />
         <NameListContainer>
-          {wheels.map((wheel) => (
+          {wheelsWithColors.map(({ color, ...wheel }) => (
             <NameList
               key={wheel.id}
               wheel={wheel}
+              color={color}
               active={selectedWheelId === wheel.id}
               onChange={handleChange(wheel.id)}
               onDelete={handleDelete(wheel.id)}

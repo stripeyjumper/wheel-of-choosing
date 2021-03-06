@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { v4 as uuid } from "uuid";
 import {
   Action,
@@ -14,6 +14,7 @@ import {
   SelectWheelAction,
 } from "./types";
 import { getRandomInteger } from "./get-random-integer";
+import { debounce } from "lodash";
 
 const defaultWheelId = uuid();
 
@@ -242,15 +243,47 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
   }
 }
 
-export function useWheels(initialState = defaultState) {
-  const [{ wheels, selectedWheelId, isSpinning }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+function getStateFromLocalStorage() {
+  const savedState = window.localStorage.getItem("wheels");
+  return savedState ? JSON.parse(savedState) : null;
+}
+
+function saveStateToLocalStorage(state: WheelManagerState) {
+  const stateToSave = {
+    ...state,
+    wheels: state.wheels.map((wheel) => ({
+      ...wheel,
+      isSpinning: false,
+      segments: wheel.segments.map((segment) => ({
+        ...segment,
+        removed: false,
+        selected: false,
+      })),
+    })),
+  };
+
+  window.localStorage.setItem("wheels", JSON.stringify(stateToSave));
+}
+
+const debouncedSave = debounce(saveStateToLocalStorage, 1000, {
+  leading: false,
+  trailing: true,
+});
+
+export function useWheels() {
+  const savedState = useMemo(() => getStateFromLocalStorage(), []);
+  const initialState = savedState || defaultState;
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const { wheels, selectedWheelId, isSpinning } = state;
 
   const selectedWheel = wheels.find(
     ({ id }) => id === selectedWheelId
   ) as Wheel;
+
+  useEffect(() => {
+    debouncedSave(state);
+  }, [state]);
 
   return {
     dispatch,

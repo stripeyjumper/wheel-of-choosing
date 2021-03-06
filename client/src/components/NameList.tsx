@@ -3,8 +3,7 @@ import styled from "styled-components";
 import { Wheel } from "./types";
 import AutosizeInput from "react-input-autosize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrashAlt } from "@fortawesome/free-regular-svg-icons";
-import { faUndo } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faUndo } from "@fortawesome/free-solid-svg-icons";
 import TextareaAutosize from "react-textarea-autosize";
 
 interface NameListProps {
@@ -18,23 +17,26 @@ interface NameListProps {
   canDeleteWheel: boolean;
   onResetWheel: () => void;
   onUpdateWheel: (label: string) => void;
+  color: string;
 }
 
 const ListContainer = styled.div<any>`
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 0.8rem;
   margin-bottom: 1rem;
-  border: 1px solid #eee;
+  border: 0.5rem solid ${({ $active, $color }) => ($active ? $color : "#eee")};
   min-width: 15rem;
   border-radius: 0.5rem;
   background-color: #eee;
 
-  background-color: ${({ active }) => (active ? "#e55" : "#eee")};
+  background-color: #eee;
 `;
 
 const ListTitleContainer = styled.div`
-  margin: 0.5rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: row;
 `;
 
 const StyledButton = styled(({ onClick, ...props }) => (
@@ -46,6 +48,7 @@ const StyledButton = styled(({ onClick, ...props }) => (
     }}
   />
 ))`
+  margin-left: 0.5rem;
   border: none;
   background-color: transparent;
   color: #777;
@@ -53,6 +56,7 @@ const StyledButton = styled(({ onClick, ...props }) => (
     color: black;
   }
   outline: none;
+  visibility: ${({ disabled }) => (disabled ? "hidden" : "show")};
 `;
 
 const WheelNameInput = styled<any>(AutosizeInput)`
@@ -63,12 +67,10 @@ const WheelNameInput = styled<any>(AutosizeInput)`
   border: 2px solid transparent;
   background-color: transparent;
   border-radius: 0.5rem;
-  color: white;
 
   :focus-within {
     border: 2px solid #777;
     background-color: white;
-    color: black;
   }
   input {
     font-family: "Varela Round", sans-serif;
@@ -78,17 +80,14 @@ const WheelNameInput = styled<any>(AutosizeInput)`
     padding: 0;
     border: none;
     background-color: transparent;
-    color: ${({ active }) => (active ? "white" : "black")};
-    &:focus {
-      color: black;
-    }
   }
 `;
 
-const StyledTextArea = styled(TextareaAutosize)`
+const StyledTextArea = styled<any>(TextareaAutosize)`
   border: none;
   font-family: inherit;
   font-size: 12pt;
+
   resize: none;
   overflow: hidden;
   line-height: 1.5;
@@ -96,8 +95,11 @@ const StyledTextArea = styled(TextareaAutosize)`
   border: 2px solid transparent;
   border-radius: 0.5rem;
   outline: none;
+  background-color: inherit;
   :focus-within {
     border: 2px solid #777;
+    background-color: white;
+    color: black;
   }
 `;
 
@@ -123,6 +125,7 @@ function NameList({
   canDeleteWheel,
   onResetWheel,
   onUpdateWheel,
+  color,
 }: NameListProps) {
   const containerRef = useRef<any>(null);
   const textAreaRef = useRef<any>(null);
@@ -156,7 +159,7 @@ function NameList({
         }
       }
     },
-    
+
     [segments, onCreate, onDelete, onChange]
   );
 
@@ -197,46 +200,39 @@ function NameList({
   );
 
   return (
-    <ListContainer onClick={handleClick} ref={containerRef} active={active}>
-      <WheelNameInput
-        value={label}
-        onChange={onNameChange}
-        minWidth="220"
-        spellCheck={false}
-        active={active}
-      />
+    <ListContainer
+      onClick={handleClick}
+      ref={containerRef}
+      $active={active}
+      $color={color}
+    >
       <ListTitleContainer>
-        <StyledButton type="button">
-          <FontAwesomeIcon icon={faEdit} /> Edit
+        <WheelNameInput
+          value={label}
+          onChange={onNameChange}
+          minWidth={"200"}
+          spellCheck={false}
+          $active={active}
+        />
+        <StyledButton
+          type="button"
+          disabled={!canDeleteWheel}
+          onClick={onDeleteWheel}
+        >
+          <FontAwesomeIcon icon={faTimes} />
         </StyledButton>
-        {canDeleteWheel ? (
-          <StyledButton
-            type="button"
-            disabled={!canDeleteWheel}
-            onClick={onDeleteWheel}
-          >
-            <FontAwesomeIcon icon={faTrashAlt} /> Delete
-          </StyledButton>
-        ) : null}
-        {canResetWheel ? (
-          <StyledButton
-            type="button"
-            onClick={onResetWheel}
-            disabled={!canResetWheel}
-          >
-            <FontAwesomeIcon icon={faUndo} /> Reset
-          </StyledButton>
-        ) : null}
       </ListTitleContainer>
       <StyledTextArea
         ref={textAreaRef}
         key="text-area"
         onChange={handleNamesChanged}
         onBlur={handleBlur}
-        value={names}
         spellCheck={false}
         placeholder="Add some names..."
-      />
+        $active={active}
+      >
+        {names}
+      </StyledTextArea>
     </ListContainer>
   );
 }
