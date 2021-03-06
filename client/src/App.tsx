@@ -31,8 +31,8 @@ const Container = styled.div`
 const NameListContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
   margin-top: 5rem;
 `;
 
@@ -134,11 +134,12 @@ function App() {
   );
 
   const handleDeleteWheel = useCallback(
-    (id: string) => () =>
+    (id: string) => () => {
       dispatch({
         type: "DELETE_WHEEL",
         id,
-      } as DeleteWheelAction),
+      } as DeleteWheelAction);
+    },
     [dispatch]
   );
 

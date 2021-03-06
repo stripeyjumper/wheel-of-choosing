@@ -24,22 +24,32 @@ const ListContainer = styled.div`
   flex-direction: column;
   padding: 1rem;
   margin-bottom: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #eee;
   min-width: 15rem;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
+  background-color: #eee;
 `;
 
 const ListTitleContainer = styled.div`
-  margin-bottom: 1rem;
+  margin: 0.5rem;
 `;
 
-const StyledButton = styled.button`
+const StyledButton = styled(({ onClick, ...props }) => (
+  <button
+    {...props}
+    onClick={(e) => {
+      e.stopPropagation();
+      onClick && onClick();
+    }}
+  />
+))`
   border: none;
   background-color: transparent;
   color: #777;
   :hover:not(:disabled) {
     color: black;
   }
+  outline: none;
 `;
 
 const WheelNameInput = styled<any>(AutosizeInput)`
@@ -49,6 +59,7 @@ const WheelNameInput = styled<any>(AutosizeInput)`
   font-size: 10pt;
   font-family: sans-serif;
   border: 2px solid transparent;
+  background-color: white;
   border-radius: 0.5rem;
   :focus-within {
     border: 2px solid #777;
@@ -57,9 +68,8 @@ const WheelNameInput = styled<any>(AutosizeInput)`
     font-size: 16pt;
     font-weight: bold;
     outline: none;
-    border: 0;
     padding: 0;
-    text-decoration: ${({ removed }) => (removed ? "line-through" : "none")};
+    border: none;
   }
 `;
 
@@ -72,7 +82,7 @@ const StyledTextArea = styled(TextareaAutosize)`
   line-height: 1.5;
   padding: 0.3rem 0.5rem;
   border: 2px solid transparent;
-  border-radius: 0.7rem;
+  border-radius: 0.5rem;
   outline: none;
   :focus-within {
     border: 2px solid #777;
@@ -172,7 +182,7 @@ function NameList({
 
   return (
     <ListContainer onClick={handleClick} ref={containerRef}>
-      <WheelNameInput value={label} onChange={onNameChange} />
+      <WheelNameInput value={label} onChange={onNameChange} minWidth="220" />
       <ListTitleContainer>
         <StyledButton type="button">
           <FontAwesomeIcon icon={faEdit} /> Edit
@@ -203,6 +213,7 @@ function NameList({
         onBlur={handleBlur}
         value={names}
         spellCheck={false}
+        placeholder="Add some names..."
       />
     </ListContainer>
   );

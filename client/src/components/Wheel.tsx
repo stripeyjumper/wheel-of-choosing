@@ -17,6 +17,7 @@ interface WheelProps {
 const Heading = styled.h1`
   text-align: center;
   margin-bottom: 1rem;
+  font-size: 30pt;
 `;
 
 const defaultProps = {
