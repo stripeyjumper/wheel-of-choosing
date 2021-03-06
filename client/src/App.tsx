@@ -42,11 +42,13 @@ const AddWheelButton = styled.button`
   margin-left: auto;
   margin-right: auto;
   border-radius: 0.5rem;
-  border: 3px solid #0a7b8d;
+  border: 3px solid #eee;
   height: 3rem;
-  color: #0a7b8d;
+  color: #115da8;
+  background-color: #eee;
   :hover {
-    background-color: #0a7b8d;
+    background-color: #115da8;
+    border-color: #115da8;
     color: white;
   }
   font-size: 14pt;

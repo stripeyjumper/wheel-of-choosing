@@ -220,13 +220,12 @@ function NameList({
         ref={textAreaRef}
         key="text-area"
         onChange={handleNamesChanged}
+        value={names}
         onBlur={handleBlur}
         spellCheck={false}
         placeholder="Add some names..."
         $active={active}
-      >
-        {names}
-      </StyledTextArea>
+      ></StyledTextArea>
     </ListContainer>
   );
 }

@@ -9,11 +9,11 @@ const BigButton = styled.button<any>`
   border: none;
   background-color: #115da8;
   border: 3px solid #115da8;
+  height: 3rem;
 
   color: white;
   font-size: 14pt;
   outline: none;
-  padding: 1rem 3rem;
 `;
 
 export default BigButton;
