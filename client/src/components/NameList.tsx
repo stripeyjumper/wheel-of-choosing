@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Wheel } from "./types";
 import AutosizeInput from "react-input-autosize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faUndo } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import TextareaAutosize from "react-textarea-autosize";
 
 interface NameListProps {
@@ -123,7 +123,6 @@ function NameList({
   onSelect,
   onDeleteWheel,
   canDeleteWheel,
-  onResetWheel,
   onUpdateWheel,
   color,
 }: NameListProps) {
@@ -133,11 +132,6 @@ function NameList({
   const onNameChange = useCallback((e) => onUpdateWheel(e.target.value), [
     onUpdateWheel,
   ]);
-
-  const canResetWheel = useMemo(
-    () => !segments.every(({ removed, selected }) => !removed && !selected),
-    [segments]
-  );
 
   const names = useMemo(() => {
     return segments.map(({ label }) => label).join("\n");
