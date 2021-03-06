@@ -12,7 +12,7 @@ const SegmentPath = styled.path`
 `;
 
 const SegmentLabel = styled.text<any>`
-  font-family: sans-serif;
+  font-family: "Varela Round", sans-serif;
   font-size: 8pt;
   font-weight: normal;
   ${({ hideLabel, selected }) => css`

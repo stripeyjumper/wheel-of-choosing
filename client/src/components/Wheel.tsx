@@ -4,12 +4,20 @@ import { motion, useMotionTemplate, useSpring } from "framer-motion";
 import { getRandomInteger } from "./get-random-integer";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHandPointLeft, faRedo } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faHandPointLeft,
+  faRedo,
+  faUndo,
+} from "@fortawesome/free-solid-svg-icons";
+import BigButton from "./BigButton";
 
 interface WheelProps {
   segments: { id: string; label: string; color: string; selected?: boolean }[];
   onSpinStart: () => void;
   onSpinEnd: () => void;
+  onReset: () => void;
+  onNextWheel: () => void;
   isSpinning: boolean;
   label?: string;
 }
@@ -26,19 +34,8 @@ const defaultProps = {
 
 const WheelGroup = motion.g;
 
-const SpinButton = styled.button`
+const SpinButton = styled(BigButton)`
   width: 200px;
-  text-align: center;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: 0.5rem;
-  border: none;
-  height: 3rem;
-  background-color: #0a7b8d;
-  border: 3px solid #0a7b8d;
-  color: white;
-  font-size: 14pt;
-  outline: none;
 `;
 
 const WheelContainer = styled.div`
@@ -76,11 +73,18 @@ function getWheelAngle(
   return prevAngle + diff + jitter + additionalSpins;
 }
 
+const ButtonRow = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 function Wheel({
   label,
   segments,
   onSpinStart,
   onSpinEnd,
+  onReset,
+  onNextWheel,
   isSpinning,
 }: WheelProps) {
   const duration = 2000;
@@ -153,12 +157,20 @@ function Wheel({
           y={92}
         />
       </svg>
-      <SpinButton
-        disabled={isSpinning || segments.length <= 1}
-        onClick={onSpinStart}
-      >
-        <FontAwesomeIcon icon={faRedo} /> Spin
-      </SpinButton>
+      <ButtonRow>
+        <SpinButton
+          disabled={isSpinning || segments.length <= 1}
+          onClick={onSpinStart}
+        >
+          <FontAwesomeIcon icon={faRedo} /> Spin
+        </SpinButton>
+        <BigButton onClick={onReset}>
+          <FontAwesomeIcon icon={faUndo} /> Reset names
+        </BigButton>{" "}
+        <BigButton onClick={onNextWheel}>
+          <FontAwesomeIcon icon={faArrowRight} /> Next wheel
+        </BigButton>
+      </ButtonRow>
     </WheelContainer>
   );
 }

@@ -88,6 +88,7 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
           segments: updateItemInArray(wheel.segments, id, (segment) => ({
             ...segment,
             label,
+            removed: false,
           })),
         })),
       };

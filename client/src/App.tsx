@@ -154,6 +154,17 @@ function App() {
     [dispatch]
   );
 
+  const handleNextWheel = useCallback(() => {
+    const index = wheels.findIndex(({ id }) => id === selectedWheelId);
+    if (index > -1 && index < wheels.length - 1) {
+      const nextId = wheels[index + 1].id;
+      dispatch({
+        type: "SELECT_WHEEL",
+        id: nextId,
+      } as SelectWheelAction);
+    }
+  }, [dispatch, wheels, selectedWheelId]);
+
   return (
     <div className="App">
       <Container>
@@ -163,6 +174,8 @@ function App() {
           segments={visibleSegments}
           onSpinStart={handleSpinStart}
           onSpinEnd={handleSpinEnd}
+          onReset={handleReset(selectedWheelId)}
+          onNextWheel={handleNextWheel}
           isSpinning={isSpinning}
         />
         <NameListContainer>
@@ -170,6 +183,7 @@ function App() {
             <NameList
               key={wheel.id}
               wheel={wheel}
+              active={selectedWheelId === wheel.id}
               onChange={handleChange(wheel.id)}
               onDelete={handleDelete(wheel.id)}
               onCreate={handleCreate(wheel.id)}

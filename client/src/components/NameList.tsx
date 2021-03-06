@@ -9,6 +9,7 @@ import TextareaAutosize from "react-textarea-autosize";
 
 interface NameListProps {
   wheel: Wheel;
+  active: boolean;
   onChange: (id: string, label: string) => void;
   onDelete: (id: string) => void;
   onCreate: (label: string) => void;
@@ -19,7 +20,7 @@ interface NameListProps {
   onUpdateWheel: (label: string) => void;
 }
 
-const ListContainer = styled.div`
+const ListContainer = styled.div<any>`
   display: flex;
   flex-direction: column;
   padding: 1rem;
@@ -28,6 +29,8 @@ const ListContainer = styled.div`
   min-width: 15rem;
   border-radius: 0.5rem;
   background-color: #eee;
+
+  background-color: ${({ active }) => (active ? "#e55" : "#eee")};
 `;
 
 const ListTitleContainer = styled.div`
@@ -57,19 +60,28 @@ const WheelNameInput = styled<any>(AutosizeInput)`
   margin: 0;
   padding: 0.3rem 0.5rem;
   font-size: 10pt;
-  font-family: sans-serif;
   border: 2px solid transparent;
-  background-color: white;
+  background-color: transparent;
   border-radius: 0.5rem;
+  color: white;
+
   :focus-within {
     border: 2px solid #777;
+    background-color: white;
+    color: black;
   }
   input {
+    font-family: "Varela Round", sans-serif;
     font-size: 16pt;
     font-weight: bold;
     outline: none;
     padding: 0;
     border: none;
+    background-color: transparent;
+    color: ${({ active }) => (active ? "white" : "black")};
+    &:focus {
+      color: black;
+    }
   }
 `;
 
@@ -102,6 +114,7 @@ function moveCursorToEnd(el: any) {
 
 function NameList({
   wheel: { label, segments },
+  active,
   onChange,
   onDelete,
   onCreate,
@@ -133,7 +146,9 @@ function NameList({
 
       for (let i = 0; i < count; i += 1) {
         if (segments.length > i && nextNames.length > i) {
-          onChange(segments[i].id, nextNames[i]);
+          if (nextNames[i] !== segments[i].label) {
+            onChange(segments[i].id, nextNames[i]);
+          }
         } else if (nextNames.length > i) {
           onCreate(nextNames[i]);
         } else {
@@ -141,6 +156,7 @@ function NameList({
         }
       }
     },
+    
     [segments, onCreate, onDelete, onChange]
   );
 
@@ -181,8 +197,14 @@ function NameList({
   );
 
   return (
-    <ListContainer onClick={handleClick} ref={containerRef}>
-      <WheelNameInput value={label} onChange={onNameChange} minWidth="220" />
+    <ListContainer onClick={handleClick} ref={containerRef} active={active}>
+      <WheelNameInput
+        value={label}
+        onChange={onNameChange}
+        minWidth="220"
+        spellCheck={false}
+        active={active}
+      />
       <ListTitleContainer>
         <StyledButton type="button">
           <FontAwesomeIcon icon={faEdit} /> Edit

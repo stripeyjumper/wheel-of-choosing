@@ -7,7 +7,7 @@ const StyledInput = styled.input`
   margin: 0;
   padding: 0.1em;
   font-size: 10pt;
-  font-family: sans-serif;
+  font-family: "Varela Round";
   border: 1px solid transparent;
   outline: none;
 `;
