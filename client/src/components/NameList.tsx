@@ -21,16 +21,18 @@ interface NameListProps {
 }
 
 const ListContainer = styled.div<any>`
-  display: flex;
-  flex-direction: column;
-  padding: 0.8rem;
   margin-bottom: 1rem;
   border: 0.5rem solid ${({ $active, $color }) => ($active ? $color : "#eee")};
   min-width: 15rem;
-  border-radius: 0.5rem;
-  background-color: #eee;
+  border-radius: 1rem;
+`;
 
-  background-color: #eee;
+const ListContainerInner = styled.div<any>`
+  display: flex;
+  flex-direction: column;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  background-color: ${({ $active }) => ($active ? "#fff" : "#eee")};
 `;
 
 const ListTitleContainer = styled.div`
@@ -101,6 +103,7 @@ const StyledTextArea = styled<any>(TextareaAutosize)`
     background-color: white;
     color: black;
   }
+  width: calc(100% - 1.4rem);
 `;
 
 function moveCursorToEnd(el: any) {
@@ -200,32 +203,34 @@ function NameList({
       $active={active}
       $color={color}
     >
-      <ListTitleContainer>
-        <WheelNameInput
-          value={label}
-          onChange={onNameChange}
-          minWidth={"200"}
+      <ListContainerInner $active={active} $color={color}>
+        <ListTitleContainer>
+          <WheelNameInput
+            value={label}
+            onChange={onNameChange}
+            minWidth={"200"}
+            spellCheck={false}
+            $active={active}
+          />
+          <StyledButton
+            type="button"
+            disabled={!canDeleteWheel}
+            onClick={onDeleteWheel}
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </StyledButton>
+        </ListTitleContainer>
+        <StyledTextArea
+          ref={textAreaRef}
+          key="text-area"
+          onChange={handleNamesChanged}
+          value={names}
+          onBlur={handleBlur}
           spellCheck={false}
+          placeholder="Add some names..."
           $active={active}
-        />
-        <StyledButton
-          type="button"
-          disabled={!canDeleteWheel}
-          onClick={onDeleteWheel}
-        >
-          <FontAwesomeIcon icon={faTimes} />
-        </StyledButton>
-      </ListTitleContainer>
-      <StyledTextArea
-        ref={textAreaRef}
-        key="text-area"
-        onChange={handleNamesChanged}
-        value={names}
-        onBlur={handleBlur}
-        spellCheck={false}
-        placeholder="Add some names..."
-        $active={active}
-      ></StyledTextArea>
+        ></StyledTextArea>
+      </ListContainerInner>
     </ListContainer>
   );
 }

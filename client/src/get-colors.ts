@@ -27,7 +27,7 @@ export function getContrastingTextColor(backgroundColor: string) {
   const grayscale =
     0.3 * bgColor.red() + 0.59 * bgColor.green() + 0.11 * bgColor.blue();
 
-  return grayscale > 192 ? "#444" : "#eee";
+  return grayscale > 192 ? "#333" : "#eee";
 }
 
 function getColor(angle: number, colors: Color[]) {
@@ -40,5 +40,5 @@ function getColor(angle: number, colors: Color[]) {
 
   const weight = (angle % anglePerColor) / anglePerColor;
 
-  return startColor.mix(endColor, weight).saturate(0.5).lighten(0.2);
+  return startColor.mix(endColor, weight).saturate(0.5);
 }

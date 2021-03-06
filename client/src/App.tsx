@@ -31,9 +31,15 @@ const Container = styled.div`
 const NameListContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  margin-top: 5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-top: 1rem;
+
+  @media (min-width: 768px) {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin-top: 8rem;
+  }
 `;
 
 const AddWheelButton = styled.button`

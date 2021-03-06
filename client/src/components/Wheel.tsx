@@ -37,7 +37,7 @@ const defaultProps = {
 const WheelGroup = motion.g;
 
 const SpinButton = styled(BigButton)`
-  width: 300px;
+  width: 100%;
   background-color: #fa9f52;
   border-color: #fa9f52;
   margin-bottom: 1rem;
@@ -82,9 +82,13 @@ const WheelContainer = styled.div`
 `;
 
 const ButtonContainer = styled.div`
-  width: 300px;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  @media (min-width: 768px) {
+    width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 `;
 
 function mod(n: number, m: number) {
@@ -197,7 +201,7 @@ function Wheel({
                   />
                 );
               })}
-              <CentreCircle fill="#444" stroke="#444" r={radius * 0.08} />
+              <CentreCircle fill="#333" stroke="#333" r={radius * 0.08} />
             </>
           ) : (
             <EmptyWheel radius={radius} label="Add some names..." />
