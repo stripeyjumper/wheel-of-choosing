@@ -45,13 +45,13 @@ const WheelGroup = motion.g;
 
 const SpinButton = styled(BigButton)`
   width: 100%;
-  background-color: #e06802;
-  border-color: #e06802;
+  background-color: #f27811;
+  border-color: #f27811;
   margin-bottom: 1rem;
 
   :hover {
     background-color: #fa9f52;
-    border-color: #fa9f52;
+    border-color: #f27811;
     color: white;
   }
 
@@ -114,7 +114,6 @@ const SmallButton = styled.button`
 const WheelContainer = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
   max-height: calc(100vh - 3rem);
 `;
 
@@ -171,6 +170,10 @@ const ButtonRow = styled.div`
 const CentreCircle = styled.circle`
   vector-effect: non-scaling-stroke;
   pointer-events: auto;
+`;
+
+const CountOfNames = styled.span`
+  opacity: 0.7;
 `;
 
 function Wheel({
@@ -267,10 +270,13 @@ function Wheel({
           disabled={isSpinning || segments.length <= 1}
           onClick={onSpinStart}
         >
-          <FontAwesomeIcon icon={faRedo} /> Spin
-          {countOfNames > remainingSegments && remainingSegments > 0
-            ? ` ${countOfNames - remainingSegments + 1}/${countOfNames}`
-            : ""}
+          <FontAwesomeIcon icon={faRedo} spin={isSpinning} /> Spin
+          <CountOfNames>
+            {` ${Math.min(
+              countOfNames,
+              countOfNames - remainingSegments + 1
+            )}/${countOfNames}`}
+          </CountOfNames>
         </SpinButton>
         <ButtonRow>
           <SmallButton onClick={onReset} disabled={!canReset}>

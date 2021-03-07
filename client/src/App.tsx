@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import NameList from "./components/NameList";
 import Wheel from "./components/Wheel";
 import { getColors } from "./get-colors";
@@ -15,6 +15,9 @@ import {
 import { useWheels } from "./components/use-wheels";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+
+import { useWindowSize } from "./use-window-size";
+import VerticalScrollAnimation from "./components/VerticalScrollAnimation";
 
 const baseColors = ["#e75449", "#2a4257", "#407f61", "#dec752", "#d27c3f"];
 
@@ -64,6 +67,7 @@ const AddWheelButton = styled.button`
 function App() {
   const { dispatch, wheels, selectedWheel } = useWheels();
 
+  const { width } = useWindowSize();
   const { id: selectedWheelId, label, segments, isSpinning } = selectedWheel;
 
   const segmentsWithColors = useMemo(() => {
@@ -108,12 +112,13 @@ function App() {
   );
 
   const handleDelete = useCallback(
-    (wheelId: string) => (id: string) =>
+    (wheelId: string) => (id: string) => {
       dispatch({
         type: "DELETE_SEGMENT",
         wheelId,
         id,
-      } as DeleteSegmentAction),
+      } as DeleteSegmentAction);
+    },
     [dispatch]
   );
 
@@ -135,28 +140,40 @@ function App() {
     [dispatch]
   );
 
-  const handleCreateWheel = useCallback(
-    () => dispatch({ type: "CREATE_WHEEL" }),
-    [dispatch]
-  );
+  const handleCreateWheel = useCallback(() => {
+    setScrollDirection("down");
+    dispatch({ type: "CREATE_WHEEL" });
+  }, [dispatch]);
 
   const handleSelect = useCallback(
-    (id: string) => () =>
+    (nextId: string) => () => {
+      const currentIndex = wheels.findIndex(({ id }) => id === selectedWheelId);
+      const nextIndex = wheels.findIndex(({ id }) => id === nextId);
+
+      console.log("Selecting here!", nextIndex > currentIndex ? 1 : -1);
+      setScrollDirection(nextIndex > currentIndex ? "down" : "up");
+
       dispatch({
         type: "SELECT_WHEEL",
-        id,
-      } as SelectWheelAction),
-    [dispatch]
+        id: nextId,
+      } as SelectWheelAction);
+    },
+    [dispatch, selectedWheelId, wheels]
   );
 
   const handleDeleteWheel = useCallback(
     (id: string) => () => {
+      if (id === selectedWheelId) {
+        const index = wheels.findIndex((wheel) => wheel.id === id);
+        setScrollDirection(index < wheels.length - 1 ? "down" : "up");
+      }
+
       dispatch({
         type: "DELETE_WHEEL",
         id,
       } as DeleteWheelAction);
     },
-    [dispatch]
+    [dispatch, wheels, selectedWheelId]
   );
 
   const handleUpdateWheel = useCallback(
@@ -174,6 +191,9 @@ function App() {
     const index = wheels.findIndex(({ id }) => id === selectedWheelId);
     if (index > -1 && index < wheels.length - 1) {
       const nextId = wheels[index + 1].id;
+
+      setScrollDirection("down");
+
       dispatch({
         type: "SELECT_WHEEL",
         id: nextId,
@@ -188,22 +208,29 @@ function App() {
   const hasNextWheel =
     wheels.findIndex(({ id }) => id === selectedWheelId) < wheels.length - 1;
 
+  const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
+
   return (
     <div className="App">
       <Container>
-        <Wheel
-          key={selectedWheelId}
-          label={label}
-          segments={visibleSegments}
-          onSpinStart={handleSpinStart}
-          onSpinEnd={handleSpinEnd}
-          onReset={handleReset(selectedWheelId)}
-          onNextWheel={handleNextWheel}
-          isSpinning={isSpinning}
-          canReset={canReset}
-          hasNextWheel={hasNextWheel}
-          countOfNames={segments.length}
-        />
+        <VerticalScrollAnimation
+          id={selectedWheelId}
+          scrollDirection={scrollDirection}
+          enabled={!width || width >= 768}
+        >
+          <Wheel
+            label={label}
+            segments={visibleSegments}
+            onSpinStart={handleSpinStart}
+            onSpinEnd={handleSpinEnd}
+            onReset={handleReset(selectedWheelId)}
+            onNextWheel={handleNextWheel}
+            isSpinning={isSpinning}
+            canReset={canReset}
+            hasNextWheel={hasNextWheel}
+            countOfNames={segments.length}
+          />
+        </VerticalScrollAnimation>
         <NameListContainer>
           {wheelsWithColors.map(({ color, ...wheel }) => (
             <NameList

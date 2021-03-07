@@ -236,6 +236,11 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
       const { id } = action as SelectWheelAction;
       return {
         ...state,
+        wheels: updateItemInArray(
+          state.wheels,
+          state.selectedWheelId,
+          (wheel) => ({ ...wheel, isSpinning: false })
+        ),
         selectedWheelId: id,
       };
     }
