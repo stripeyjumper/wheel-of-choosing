@@ -70,8 +70,6 @@ export function EmptyWheel({
   );
 }
 
-
-
 function WheelSegment({
   id,
   radius,
@@ -123,7 +121,7 @@ function WheelSegment({
           onClick={onClick}
         />
       )}
-      <SegmentLabel
+      {/* <SegmentLabel
         id={labelId}
         text-anchor="start"
         x={(textState?.offset || 20) / (textState?.scale || 1)}
@@ -137,7 +135,7 @@ function WheelSegment({
         fill={textState ? getContrastingTextColor(color) : "transparent"}
       >
         {label}
-      </SegmentLabel>
+      </SegmentLabel> */}
     </>
   );
 }
