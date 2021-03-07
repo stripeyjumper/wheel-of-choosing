@@ -31,7 +31,7 @@ const ListContainerInner = styled.div<any>`
   display: flex;
   flex-direction: column;
   padding: 0.8rem;
-  border-radius: 0.5rem;
+  border-radius: ${({ $active }) => ($active ? "0.5rem" : "none")};
   background-color: ${({ $active }) => ($active ? "#fff" : "#eee")};
 `;
 
@@ -39,6 +39,7 @@ const ListTitleContainer = styled.div`
   margin-bottom: 0.5rem;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
 `;
 
 const StyledButton = styled(({ onClick, ...props }) => (
@@ -71,7 +72,7 @@ const WheelNameInput = styled<any>(AutosizeInput)`
   border-radius: 0.5rem;
 
   :focus-within {
-    border: 2px solid #777;
+    border: 2px solid #bbb;
     background-color: white;
   }
   input {
@@ -99,7 +100,7 @@ const StyledTextArea = styled<any>(TextareaAutosize)`
   outline: none;
   background-color: inherit;
   :focus-within {
-    border: 2px solid #777;
+    border: 2px solid #bbb;
     background-color: white;
     color: black;
   }

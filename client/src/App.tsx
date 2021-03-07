@@ -181,6 +181,13 @@ function App() {
     }
   }, [dispatch, wheels, selectedWheelId]);
 
+  const canReset = segments.some(
+    ({ removed, selected }) => removed || selected
+  );
+
+  const hasNextWheel =
+    wheels.findIndex(({ id }) => id === selectedWheelId) < wheels.length - 1;
+
   return (
     <div className="App">
       <Container>
@@ -193,6 +200,9 @@ function App() {
           onReset={handleReset(selectedWheelId)}
           onNextWheel={handleNextWheel}
           isSpinning={isSpinning}
+          canReset={canReset}
+          hasNextWheel={hasNextWheel}
+          countOfNames={segments.length}
         />
         <NameListContainer>
           {wheelsWithColors.map(({ color, ...wheel }) => (

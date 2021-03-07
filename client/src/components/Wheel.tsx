@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import WheelSegment, { EmptyWheel } from "./WheelSegment";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
 import { getRandomInteger } from "./get-random-integer";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
@@ -20,14 +20,21 @@ interface WheelProps {
   onNextWheel: () => void;
   isSpinning: boolean;
   label?: string;
+  canReset: boolean;
+  hasNextWheel: boolean;
+  countOfNames: number;
 }
 
 const Heading = styled.h1`
   text-align: center;
   margin-bottom: 0;
-  font-size: 36pt;
+  font-size: 25pt;
   font-weight: 700;
   color: white;
+
+  @media (min-width: 768px) {
+    font-size: 36pt;
+  }
 `;
 
 const defaultProps = {
@@ -38,22 +45,36 @@ const WheelGroup = motion.g;
 
 const SpinButton = styled(BigButton)`
   width: 100%;
-  background-color: #fa9f52;
-  border-color: #fa9f52;
+  background-color: #e06802;
+  border-color: #e06802;
   margin-bottom: 1rem;
 
   :hover {
-    background-color: #e06802;
-    border-color: #e06802;
+    background-color: #fa9f52;
+    border-color: #fa9f52;
     color: white;
   }
+
+  ${({ disabled }) =>
+    disabled
+      ? css`
+          color: #aaa;
+          background-color: #eee;
+          border-color: #eee;
+          :hover {
+            background-color: #eee;
+            border-color: #eee;
+            color: #aaa;
+          }
+        `
+      : ""}
 `;
 
 const SmallButton = styled.button`
-  width: 150px;
   font-size: 10pt;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
+  flex: 1;
 
   font-family: "Varela Round", sans-serif;
   text-align: center;
@@ -72,6 +93,22 @@ const SmallButton = styled.button`
     border-color: #115da8;
     color: white;
   }
+
+  @media (min-width: 768px) {
+    width: 150px;
+  }
+
+  ${({ disabled }) =>
+    disabled
+      ? css`
+          color: #aaa;
+          :hover {
+            background-color: #eee;
+            border-color: #eee;
+            color: #aaa;
+          }
+        `
+      : ""}
 `;
 
 const WheelContainer = styled.div`
@@ -121,11 +158,14 @@ function getWheelAngle(
 
 const ButtonRow = styled.div`
   display: flex;
-  align-items: flex-start;
-  align-content: stretch;
   flex-direction: row;
   margin-left: -0.5rem;
   margin-right: -0.5rem;
+  justify-content: space-between;
+
+  @media (min-width: 768px) {
+    align-items: flex-start;
+  }
 `;
 
 const CentreCircle = styled.circle`
@@ -141,6 +181,9 @@ function Wheel({
   onReset,
   onNextWheel,
   isSpinning,
+  canReset,
+  hasNextWheel,
+  countOfNames,
 }: WheelProps) {
   const duration = 2000;
   const spinAngle = useSpring(0, { duration });
@@ -163,6 +206,9 @@ function Wheel({
   }, [isSpinning, spinAngle, onSpinEnd, segments]);
 
   const rotate = useMotionTemplate`${spinAngle}rad`;
+  const remainingSegments = isSpinning
+    ? segments.length
+    : segments.filter(({ selected }) => !selected).length;
 
   return (
     <WheelContainer>
@@ -222,12 +268,15 @@ function Wheel({
           onClick={onSpinStart}
         >
           <FontAwesomeIcon icon={faRedo} /> Spin
+          {countOfNames > remainingSegments && remainingSegments > 0
+            ? ` ${countOfNames - remainingSegments + 1}/${countOfNames}`
+            : ""}
         </SpinButton>
         <ButtonRow>
-          <SmallButton onClick={onReset}>
+          <SmallButton onClick={onReset} disabled={!canReset}>
             <FontAwesomeIcon icon={faUndo} /> Reset names
           </SmallButton>
-          <SmallButton onClick={onNextWheel}>
+          <SmallButton onClick={onNextWheel} disabled={!hasNextWheel}>
             <FontAwesomeIcon icon={faArrowRight} /> Next wheel
           </SmallButton>
         </ButtonRow>

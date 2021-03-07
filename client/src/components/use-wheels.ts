@@ -175,6 +175,7 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
             selected: false,
             ...rest,
           })),
+          isSpinning: false,
         })),
       };
     }
