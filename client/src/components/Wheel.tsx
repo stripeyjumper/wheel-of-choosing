@@ -253,14 +253,14 @@ function Wheel({
             <EmptyWheel radius={radius} label="Add some names..." />
           )}
         </WheelGroup>
-        {/* <FontAwesomeIcon
+        <FontAwesomeIcon
           icon={faHandPointLeft}
           width={20}
           height={20}
           x={195}
           y={92}
           color="#fff"
-        /> */}
+        />
       </svg>
       <ButtonContainer>
         <SpinButton
