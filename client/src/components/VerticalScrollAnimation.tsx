@@ -2,7 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 
-const WheelContainer = styled.div`
+const ScrollContainer = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
@@ -53,7 +53,7 @@ function VerticalScrollAnimation({
 }) {
   const direction = scrollDirection === "up" ? -1 : 1;
   return enabled ? (
-    <WheelContainer>
+    <ScrollContainer>
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={id}
@@ -74,7 +74,7 @@ function VerticalScrollAnimation({
           {children}
         </motion.div>
       </AnimatePresence>
-    </WheelContainer>
+    </ScrollContainer>
   ) : (
     <>{children}</>
   );

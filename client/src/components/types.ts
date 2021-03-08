@@ -78,3 +78,9 @@ export interface UpdateWheelAction extends Action {
   id: string;
   label: string;
 }
+
+export interface StartSpinAction extends Action {
+  type: "START_SPIN";
+  id: string;
+  nextSelectedSegmentId: string;
+}

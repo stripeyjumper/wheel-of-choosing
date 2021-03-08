@@ -9,6 +9,7 @@ import {
   DeleteWheelAction,
   ResetWheelAction,
   SelectWheelAction,
+  StartSpinAction,
   UpdateSegmentAction,
   UpdateWheelAction,
 } from "./components/types";
@@ -18,6 +19,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { useWindowSize } from "./use-window-size";
 import VerticalScrollAnimation from "./components/VerticalScrollAnimation";
+import { getRandomInteger } from "./components/get-random-integer";
 
 const baseColors = ["#e75449", "#2a4257", "#407f61", "#dec752", "#d27c3f"];
 
@@ -92,8 +94,22 @@ function App() {
   );
 
   const handleSpinStart = useCallback(() => {
-    dispatch({ type: "START_SPIN" });
-  }, [dispatch]);
+    if (!isSpinning) {
+      const selectedSegmentIndex = getRandomInteger(
+        0,
+        visibleSegments.length - 1
+      );
+
+      const { id: nextSelectedSegmentId } = visibleSegments[
+        selectedSegmentIndex
+      ];
+
+      dispatch({
+        type: "START_SPIN",
+        nextSelectedSegmentId,
+      } as StartSpinAction);
+    }
+  }, [dispatch, visibleSegments, isSpinning]);
 
   const handleSpinEnd = useCallback(() => {
     dispatch({ type: "END_SPIN" });

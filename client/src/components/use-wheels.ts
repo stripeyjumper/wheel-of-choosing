@@ -12,8 +12,8 @@ import {
   UpdateWheelAction,
   DeleteWheelAction,
   SelectWheelAction,
+  StartSpinAction,
 } from "./types";
-import { getRandomInteger } from "./get-random-integer";
 import { debounce } from "lodash";
 
 const defaultWheelId = uuid();
@@ -106,6 +106,7 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
       };
     }
     case "START_SPIN": {
+      const { nextSelectedSegmentId } = action as StartSpinAction;
       const { selectedWheelId, wheels } = state;
 
       return {
@@ -121,21 +122,11 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
             return wheel;
           }
 
-          // Randomly pick the next segment to spin to
-          const selectedSegmentIndex = getRandomInteger(
-            0,
-            visibleSegments.length - 1
-          );
-
-          const { id: selectedSegmentId } = visibleSegments[
-            selectedSegmentIndex
-          ];
-
           const nextSegments = wheel.segments.map(
             ({ removed, selected, ...rest }) => ({
               ...rest,
               removed: removed || selected,
-              selected: rest.id === selectedSegmentId,
+              selected: rest.id === nextSelectedSegmentId,
             })
           );
 
