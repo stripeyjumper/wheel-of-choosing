@@ -189,7 +189,9 @@ function Wheel({
   countOfNames,
 }: WheelProps) {
   const duration = 2000;
-  const spinAngle = useSpring(Math.random() * 2 * Math.PI, {
+  const isEmpty = !segments.length;
+  const randomAngle = Math.random() * 2 * Math.PI;
+  const spinAngle = useSpring(isEmpty ? 0 : randomAngle, {
     duration: 2000,
   });
   const segmentAngle = (2 * Math.PI) / segments.length;
@@ -235,7 +237,7 @@ function Wheel({
           }
           style={{ originX: "110px", originY: "100px" }}
         >
-          {segments.length ? (
+          {!isEmpty ? (
             <>
               {segments.map(({ id, label, color, selected }, i) => {
                 const rotation = i * segmentAngle;
