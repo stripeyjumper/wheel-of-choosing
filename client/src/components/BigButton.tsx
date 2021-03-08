@@ -1,6 +1,15 @@
+import { motion } from "framer-motion";
 import styled from "styled-components";
 
-const BigButton = styled.button<any>`
+const ExpandingButton = (props: any) => (
+  <motion.button
+    whileHover={{ scale: props.disabled ? 1 : 1.05 }}
+    whileTap={{ scale: props.disabled ? 1 : 0.95 }}
+    {...props}
+  />
+);
+
+const BigButton = styled(ExpandingButton)`
   font-family: "Varela Round", sans-serif;
   text-align: center;
   margin-left: auto;
