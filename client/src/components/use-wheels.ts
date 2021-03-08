@@ -106,12 +106,12 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
       };
     }
     case "START_SPIN": {
-      const { nextSelectedSegmentId } = action as StartSpinAction;
-      const { selectedWheelId, wheels } = state;
+      const { id, nextSelectedSegmentId } = action as StartSpinAction;
+      const { wheels } = state;
 
       return {
         ...state,
-        wheels: updateItemInArray(wheels, selectedWheelId, (wheel) => {
+        wheels: updateItemInArray(wheels, id, (wheel) => {
           const { segments } = wheel;
 
           const visibleSegments = segments.filter(

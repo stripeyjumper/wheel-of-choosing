@@ -6,11 +6,11 @@ import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
-  faHandPointLeft,
   faRedo,
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 import BigButton from "./BigButton";
+import PointyFinger from "./PointyFinger";
 
 interface WheelProps {
   segments: { id: string; label: string; color: string; selected?: boolean }[];
@@ -189,8 +189,12 @@ function Wheel({
   countOfNames,
 }: WheelProps) {
   const duration = 2000;
-  const spinAngle = useSpring(0, { duration });
+  const spinAngle = useSpring(Math.random() * 2 * Math.PI, {
+    duration: 2000,
+  });
   const segmentAngle = (2 * Math.PI) / segments.length;
+  const showPointer =
+    countOfNames > segments.filter(({ selected }) => !selected).length;
 
   const { radius } = defaultProps;
 
@@ -256,14 +260,7 @@ function Wheel({
             <EmptyWheel radius={radius} label="Add some names..." />
           )}
         </WheelGroup>
-        <FontAwesomeIcon
-          icon={faHandPointLeft}
-          width={20}
-          height={20}
-          x={195}
-          y={92}
-          color="#fff"
-        />
+        <PointyFinger showPointer={showPointer} />
       </svg>
       <ButtonContainer>
         <SpinButton

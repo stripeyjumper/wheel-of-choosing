@@ -111,11 +111,12 @@ function App() {
 
         dispatch({
           type: "START_SPIN",
+          id: selectedWheelId,
           nextSelectedSegmentId,
         } as StartSpinAction);
       }
     }
-  }, [dispatch, segments, isSpinning]);
+  }, [dispatch, segments, selectedWheelId, isSpinning]);
 
   const handleSpinEnd = useCallback(() => {
     dispatch({ type: "END_SPIN" });
@@ -240,6 +241,7 @@ function App() {
           enabled={!width || width >= 768}
         >
           <Wheel
+            key={selectedWheelId}
             label={label}
             segments={visibleSegments}
             onSpinStart={handleSpinStart}
