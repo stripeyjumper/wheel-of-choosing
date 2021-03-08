@@ -214,7 +214,6 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
         );
         const index = Math.min(deletedIndex, nextWheels.length - 1);
         selectedWheelId = index >= 0 ? nextWheels[index].id : undefined;
-        console.log("Changing selected wheel!", selectedWheelId);
       }
 
       return {

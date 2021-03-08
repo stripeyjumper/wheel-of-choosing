@@ -21,7 +21,6 @@ const ScrollContainer = styled.div`
 
 const variants = {
   enter: (direction: number) => {
-    console.log("Enter here!", direction);
     return {
       y: direction * 2000,
       opacity: 0,
@@ -32,7 +31,6 @@ const variants = {
     opacity: 1,
   },
   exit: (direction: number) => {
-    console.log("Exit here!", direction);
     return {
       y: direction * -2000,
       opacity: 0,

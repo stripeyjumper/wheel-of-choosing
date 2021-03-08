@@ -166,7 +166,6 @@ function App() {
       const currentIndex = wheels.findIndex(({ id }) => id === selectedWheelId);
       const nextIndex = wheels.findIndex(({ id }) => id === nextId);
 
-      console.log("Selecting here!", nextIndex > currentIndex ? 1 : -1);
       setScrollDirection(nextIndex > currentIndex ? "down" : "up");
 
       dispatch({
