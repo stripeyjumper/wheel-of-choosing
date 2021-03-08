@@ -95,21 +95,27 @@ function App() {
 
   const handleSpinStart = useCallback(() => {
     if (!isSpinning) {
-      const selectedSegmentIndex = getRandomInteger(
-        0,
-        visibleSegments.length - 1
+      const nextSegments = segments.filter(
+        ({ removed, selected }) => !removed && !selected
       );
 
-      const { id: nextSelectedSegmentId } = visibleSegments[
-        selectedSegmentIndex
-      ];
+      if (nextSegments.length) {
+        const selectedSegmentIndex = getRandomInteger(
+          0,
+          nextSegments.length - 1
+        );
 
-      dispatch({
-        type: "START_SPIN",
-        nextSelectedSegmentId,
-      } as StartSpinAction);
+        const { id: nextSelectedSegmentId } = nextSegments[
+          selectedSegmentIndex
+        ];
+
+        dispatch({
+          type: "START_SPIN",
+          nextSelectedSegmentId,
+        } as StartSpinAction);
+      }
     }
-  }, [dispatch, visibleSegments, isSpinning]);
+  }, [dispatch, segments, isSpinning]);
 
   const handleSpinEnd = useCallback(() => {
     dispatch({ type: "END_SPIN" });
