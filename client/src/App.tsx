@@ -21,6 +21,16 @@ import { useWindowSize } from "./use-window-size";
 import VerticalScrollAnimation from "./components/VerticalScrollAnimation";
 import { getRandomInteger } from "./components/get-random-integer";
 
+const skipName = process.env.REACT_APP_SKIP_NAME;
+
+function shouldSkipName(name?: string) {
+  if (!name || !skipName) {
+    return false;
+  }
+
+  return new RegExp(skipName).test(name);
+}
+
 const baseColors = ["#e75449", "#2a4257", "#407f61", "#dec752", "#d27c3f"];
 
 const Container = styled.div`
@@ -95,11 +105,18 @@ function App() {
 
   const handleSpinStart = useCallback(() => {
     if (!isSpinning) {
-      const nextSegments = segments.filter(
+      let nextSegments = segments.filter(
         ({ removed, selected }) => !removed && !selected
       );
 
       if (nextSegments.length) {
+        // Skip any segments with the specified name, unless they are all a match
+        if (!nextSegments.every(({ label }) => shouldSkipName(label))) {
+          nextSegments = nextSegments.filter(
+            ({ label }) => !shouldSkipName(label)
+          );
+        }
+
         const selectedSegmentIndex = getRandomInteger(
           0,
           nextSegments.length - 1
