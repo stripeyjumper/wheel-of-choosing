@@ -273,7 +273,7 @@ function Wheel({
           <CountOfNames>
             {` ${Math.min(
               countOfNames,
-              countOfNames - remainingSegments + 1
+              countOfNames - remainingSegments
             )}/${countOfNames}`}
           </CountOfNames>
         </SpinButton>
