@@ -9,9 +9,7 @@ import TextareaAutosize from "react-textarea-autosize";
 interface NameListProps {
   wheel: Wheel;
   active: boolean;
-  onChange: (id: string, label: string) => void;
-  onDelete: (id: string) => void;
-  onCreate: (label: string) => void;
+  onNamesChanged: (labels: string[]) => void;
   onSelect: () => void;
   onDeleteWheel: () => void;
   canDeleteWheel: boolean;
@@ -121,9 +119,7 @@ function moveCursorToEnd(el: any) {
 function NameList({
   wheel: { label, segments },
   active,
-  onChange,
-  onDelete,
-  onCreate,
+  onNamesChanged,
   onSelect,
   onDeleteWheel,
   canDeleteWheel,
@@ -141,35 +137,15 @@ function NameList({
     return segments.map(({ label }) => label).join("\n");
   }, [segments]);
 
-  const syncNames = useCallback(
-    (nextNames) => {
-      const count = Math.max(nextNames.length, segments.length);
-
-      for (let i = 0; i < count; i += 1) {
-        if (segments.length > i && nextNames.length > i) {
-          if (nextNames[i] !== segments[i].label) {
-            onChange(segments[i].id, nextNames[i]);
-          }
-        } else if (nextNames.length > i) {
-          onCreate(nextNames[i]);
-        } else {
-          onDelete(segments[i].id);
-        }
-      }
-    },
-
-    [segments, onCreate, onDelete, onChange]
-  );
-
   const handleNamesChanged = useCallback(
     (e) => {
       const value = e.target.value || "";
 
       const nextNames = value.trim().length === 0 ? [] : value.split("\n");
 
-      syncNames(nextNames);
+      onNamesChanged(nextNames);
     },
-    [syncNames]
+    [onNamesChanged]
   );
 
   const handleBlur = useCallback(
@@ -181,9 +157,9 @@ function NameList({
         .map((name: string) => (name ? name.trim() : name))
         .filter((name: string) => !!name);
 
-      syncNames(nextNames);
+      onNamesChanged(nextNames);
     },
-    [syncNames]
+    [onNamesChanged]
   );
 
   const handleClick = useCallback(

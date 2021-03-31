@@ -4,9 +4,8 @@ import {
   Action,
   WheelManagerState,
   Wheel,
-  CreateSegmentAction,
-  UpdateSegmentAction,
-  DeleteSegmentAction,
+  WheelSegment,
+  UpdateSegmentsAction,
   ResetWheelAction,
   CreateWheelAction,
   UpdateWheelAction,
@@ -61,47 +60,53 @@ function deleteItemFromArray<TItem extends { id: any }>(
   return result;
 }
 
+function updateSegments(segments: WheelSegment[], labels: string[]) {
+  const remainingSegments = [...segments];
+  const nextSegments: (WheelSegment | null)[] = Array(labels.length).fill(null);
+  const missingIndexes: number[] = [];
+
+  // Use existing segments where the names match
+  labels.forEach((label, i) => {
+    const index = remainingSegments.findIndex(
+      (segment) => segment.label === label
+    );
+    if (index > -1) {
+      nextSegments[i] = remainingSegments[index];
+      remainingSegments.splice(index, 1);
+    } else {
+      missingIndexes.push(i);
+    }
+  });
+
+  // Re-use existing segments with updated names, if possible
+  missingIndexes.forEach((index) => {
+    const label = labels[index];
+    if (remainingSegments.length) {
+      nextSegments[index] = { ...remainingSegments[0], label };
+      remainingSegments.splice(0, 1);
+    } else {
+      nextSegments[index] = {
+        id: uuid(),
+        label,
+        selected: false,
+        removed: false,
+      };
+    }
+  });
+
+  return nextSegments as WheelSegment[];
+}
+
 function reducer(state: WheelManagerState, action: Action): WheelManagerState {
   switch (action.type) {
-    case "CREATE_SEGMENT": {
-      const { wheelId, label } = action as CreateSegmentAction;
+    case "UPDATE_SEGMENTS": {
+      const { id, labels } = action as UpdateSegmentsAction;
 
       return {
         ...state,
-        wheels: updateItemInArray(state.wheels, wheelId, (wheel) => {
-          return {
-            ...wheel,
-            segments: [
-              ...wheel.segments,
-              { id: uuid(), label, selected: false, removed: false },
-            ],
-          };
-        }),
-      };
-    }
-    case "UPDATE_SEGMENT": {
-      const { wheelId, id, label } = action as UpdateSegmentAction;
-
-      return {
-        ...state,
-        wheels: updateItemInArray(state.wheels, wheelId, (wheel) => ({
+        wheels: updateItemInArray(state.wheels, id, (wheel) => ({
           ...wheel,
-          segments: updateItemInArray(wheel.segments, id, (segment) => ({
-            ...segment,
-            label,
-            removed: false,
-          })),
-        })),
-      };
-    }
-    case "DELETE_SEGMENT": {
-      const { wheelId, id } = action as DeleteSegmentAction;
-
-      return {
-        ...state,
-        wheels: updateItemInArray(state.wheels, wheelId, (wheel) => ({
-          ...wheel,
-          segments: deleteItemFromArray(wheel.segments, id),
+          segments: updateSegments(wheel.segments, labels),
         })),
       };
     }

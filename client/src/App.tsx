@@ -4,13 +4,11 @@ import Wheel from "./components/Wheel";
 import { getColors } from "./get-colors";
 import styled from "styled-components";
 import {
-  CreateSegmentAction,
-  DeleteSegmentAction,
+  UpdateSegmentsAction,
   DeleteWheelAction,
   ResetWheelAction,
   SelectWheelAction,
   StartSpinAction,
-  UpdateSegmentAction,
   UpdateWheelAction,
 } from "./components/types";
 import { useWheels } from "./components/use-wheels";
@@ -139,36 +137,13 @@ function App() {
     dispatch({ type: "END_SPIN" });
   }, [dispatch]);
 
-  const handleChange = useCallback(
-    (wheelId: string) => (id: string, name: string) => {
+  const handleReplaceSegments = useCallback(
+    (id: string) => (labels: string[]) => {
       dispatch({
-        type: "UPDATE_SEGMENT",
-        wheelId,
+        type: "UPDATE_SEGMENTS",
         id,
-        label: name,
-      } as UpdateSegmentAction);
-    },
-    [dispatch]
-  );
-
-  const handleDelete = useCallback(
-    (wheelId: string) => (id: string) => {
-      dispatch({
-        type: "DELETE_SEGMENT",
-        wheelId,
-        id,
-      } as DeleteSegmentAction);
-    },
-    [dispatch]
-  );
-
-  const handleCreate = useCallback(
-    (wheelId: string) => (name: string) => {
-      dispatch({
-        type: "CREATE_SEGMENT",
-        wheelId,
-        label: name,
-      } as CreateSegmentAction);
+        labels,
+      } as UpdateSegmentsAction);
     },
     [dispatch]
   );
@@ -278,9 +253,7 @@ function App() {
               wheel={wheel}
               color={color}
               active={selectedWheelId === wheel.id}
-              onChange={handleChange(wheel.id)}
-              onDelete={handleDelete(wheel.id)}
-              onCreate={handleCreate(wheel.id)}
+              onNamesChanged={handleReplaceSegments(wheel.id)}
               onSelect={handleSelect(wheel.id)}
               onDeleteWheel={handleDeleteWheel(wheel.id)}
               canDeleteWheel={wheels.length > 1}

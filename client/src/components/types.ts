@@ -28,23 +28,10 @@ export interface WheelManagerState {
   isSpinning: boolean;
 }
 
-export interface CreateSegmentAction extends Action {
-  type: "CREATE_SEGMENT";
-  wheelId: string;
-  label: string;
-}
-
-export interface UpdateSegmentAction extends Action {
-  type: "UPDATE_SEGMENT";
-  wheelId: string;
+export interface UpdateSegmentsAction extends Action {
+  type: "UPDATE_SEGMENTS";
   id: string;
-  label: string;
-}
-
-export interface DeleteSegmentAction extends Action {
-  type: "DELETE_SEGMENT";
-  wheelId: string;
-  id: string;
+  labels: string[];
 }
 
 export interface ResetWheelAction extends Action {
