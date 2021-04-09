@@ -7,6 +7,17 @@ const ScrollContainer = styled.div`
   width: 100%;
   height: 100%;
   @media (min-width: 768px) {
+    height: calc(100vh - 1rem);
+
+    > div {
+      position: absolute;
+      left: 0;
+      top: 0;
+      max-height: calc(100vh - 1rem);
+    }
+  }
+
+  @media (min-width: 768px) and (min-height: 700px) {
     height: calc(100vh - 3rem);
 
     > div {

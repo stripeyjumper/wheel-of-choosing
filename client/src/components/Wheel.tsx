@@ -32,7 +32,7 @@ const Heading = styled.h1`
   font-weight: 700;
   color: white;
 
-  @media (min-width: 768px) {
+  @media (min-width: 768px) and (min-height: 700px) {
     font-size: 36pt;
   }
 `;
@@ -114,7 +114,11 @@ const SmallButton = styled.button`
 const WheelContainer = styled.div`
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 3rem);
+  max-height: calc(100vh - 1rem);
+
+  @media (min-height: 700px) {
+    max-height: calc(100vh - 3rem);
+  }
 `;
 
 const ButtonContainer = styled.div`
