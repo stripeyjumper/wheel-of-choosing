@@ -279,7 +279,6 @@ function getStateFromQueryString() {
         "Wheel of choosing",
         `${origin}${pathname}`
       );
-      console.log("Got it!", state);
       return state;
     }
   }
