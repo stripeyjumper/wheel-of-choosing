@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { compress, decompress } from "lzutf8";
 import { WheelManagerState } from "./types";
+import Ajv, { JTDSchemaType } from "ajv/dist/jtd";
 
 /** Compact format for serializing wheel state */
 interface SavedState {
@@ -10,6 +11,30 @@ interface SavedState {
   }[];
   i: number;
 }
+
+const schema: JTDSchemaType<SavedState> = {
+  properties: {
+    w: {
+      elements: {
+        properties: {
+          l: {
+            type: "string",
+          },
+          s: {
+            elements: {
+              type: "string",
+            },
+          },
+        },
+      },
+    },
+    i: {
+      type: "int32",
+    },
+  },
+};
+
+const validateSavedState = new Ajv().compile(schema);
 
 /** Prepare wheel state to be saved */
 function mapToSavedState({
@@ -61,8 +86,28 @@ export function serializeWheelState(state: WheelManagerState) {
 }
 
 /** Get fully hydrated wheel state from a base64 string */
-export function deserializeWheelState(data: string): WheelManagerState {
-  return mapFromSavedState(
-    JSON.parse(decompress(data, { inputEncoding: "Base64" }))
-  );
+export function deserializeWheelState(data: string): WheelManagerState | null {
+  let result: WheelManagerState | null = null;
+  try {
+    const json = decodeURI(
+      decompress(data, {
+        inputEncoding: "Base64",
+      })
+    );
+    const savedState = JSON.parse(json) as SavedState;
+
+    if (!validateSavedState(savedState)) {
+      throw new Error("Saved state failed validation");
+    }
+
+    if (!savedState.w.length) {
+      throw new Error("No wheels found in saved state");
+    }
+
+    result = mapFromSavedState(savedState);
+  } catch (e) {
+    console.error(`Error deserializing wheel data: ${e.message}`);
+  }
+
+  return result;
 }

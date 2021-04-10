@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { v4 as uuid } from "uuid";
 import {
   Action,
@@ -12,12 +12,14 @@ import {
   DeleteWheelAction,
   SelectWheelAction,
   StartSpinAction,
+  ReplaceStateAction,
 } from "./types";
 import { debounce } from "lodash";
 import {
   serializeWheelState,
   deserializeWheelState,
 } from "./serializeWheelState";
+import queryString from "query-string";
 
 const defaultWheelId = uuid();
 
@@ -243,6 +245,10 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
         selectedWheelId: id,
       };
     }
+    case "REPLACE_STATE": {
+      const { state } = action as ReplaceStateAction;
+      return { ...state };
+    }
     default:
       throw new Error();
   }
@@ -262,10 +268,38 @@ const debouncedSave = debounce(saveStateToLocalStorage, 1000, {
   trailing: true,
 });
 
+function getStateFromQueryString() {
+  const { wheels } = queryString.parse(window.location.search);
+  if (wheels && typeof wheels === "string") {
+    const state = deserializeWheelState(wheels);
+    if (state) {
+      const { pathname, origin } = window.location;
+      window.history.replaceState(
+        {},
+        "Wheel of choosing",
+        `${origin}${pathname}`
+      );
+      console.log("Got it!", state);
+      return state;
+    }
+  }
+  return null;
+}
+
 export function useWheels() {
-  const savedState = useMemo(() => getStateFromLocalStorage(), []);
-  const initialState = savedState || defaultState;
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(reducer, defaultState);
+
+  useEffect(() => {
+    const savedState = getStateFromQueryString() || getStateFromLocalStorage();
+    if (savedState) {
+      dispatch({
+        type: "REPLACE_STATE",
+        state: savedState,
+      } as ReplaceStateAction);
+    }
+    setLoading(false);
+  }, []);
 
   const { wheels, selectedWheelId, isSpinning } = state;
 
@@ -279,6 +313,7 @@ export function useWheels() {
 
   return {
     dispatch,
+    loading,
     wheels,
     isSpinning,
     selectedWheel,

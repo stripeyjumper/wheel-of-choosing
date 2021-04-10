@@ -71,3 +71,8 @@ export interface StartSpinAction extends Action {
   id: string;
   nextSelectedSegmentId: string;
 }
+
+export interface ReplaceStateAction extends Action {
+  type: "REPLACE_STATE";
+  state: WheelManagerState;
+}

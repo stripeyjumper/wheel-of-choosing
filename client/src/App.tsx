@@ -75,7 +75,7 @@ const AddWheelButton = styled.button`
 `;
 
 function App() {
-  const { dispatch, wheels, selectedWheel } = useWheels();
+  const { dispatch, wheels, selectedWheel, loading } = useWheels();
 
   const { width } = useWindowSize();
   const { id: selectedWheelId, label, segments, isSpinning } = selectedWheel;
@@ -223,6 +223,10 @@ function App() {
     wheels.findIndex(({ id }) => id === selectedWheelId) < wheels.length - 1;
 
   const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <div className="App">
