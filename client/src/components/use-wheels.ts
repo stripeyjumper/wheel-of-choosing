@@ -14,6 +14,10 @@ import {
   StartSpinAction,
 } from "./types";
 import { debounce } from "lodash";
+import {
+  serializeWheelState,
+  deserializeWheelState,
+} from "./serializeWheelState";
 
 const defaultWheelId = uuid();
 
@@ -244,26 +248,13 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
   }
 }
 
-function getStateFromLocalStorage() {
-  const savedState = window.localStorage.getItem("wheels");
-  return savedState ? JSON.parse(savedState) : null;
+function saveStateToLocalStorage(state: WheelManagerState) {
+  window.localStorage.setItem("saved_wheels", serializeWheelState(state));
 }
 
-function saveStateToLocalStorage(state: WheelManagerState) {
-  const stateToSave = {
-    ...state,
-    wheels: state.wheels.map((wheel) => ({
-      ...wheel,
-      isSpinning: false,
-      segments: wheel.segments.map((segment) => ({
-        ...segment,
-        removed: false,
-        selected: false,
-      })),
-    })),
-  };
-
-  window.localStorage.setItem("wheels", JSON.stringify(stateToSave));
+function getStateFromLocalStorage() {
+  const savedState = window.localStorage.getItem("saved_wheels");
+  return savedState ? deserializeWheelState(savedState) : null;
 }
 
 const debouncedSave = debounce(saveStateToLocalStorage, 1000, {
