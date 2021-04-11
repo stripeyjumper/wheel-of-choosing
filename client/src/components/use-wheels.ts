@@ -21,6 +21,8 @@ import {
 } from "./serializeWheelState";
 import queryString from "query-string";
 
+const LOCAL_STORAGE_KEY = "wheels";
+
 const defaultWheelId = uuid();
 
 const defaultState: WheelManagerState = {
@@ -255,11 +257,11 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
 }
 
 function saveStateToLocalStorage(state: WheelManagerState) {
-  window.localStorage.setItem("saved_wheels", serializeWheelState(state));
+  window.localStorage.setItem(LOCAL_STORAGE_KEY, serializeWheelState(state));
 }
 
 function getStateFromLocalStorage() {
-  const savedState = window.localStorage.getItem("saved_wheels");
+  const savedState = window.localStorage.getItem(LOCAL_STORAGE_KEY);
   return savedState ? deserializeWheelState(savedState) : null;
 }
 
@@ -267,6 +269,14 @@ const debouncedSave = debounce(saveStateToLocalStorage, 1000, {
   leading: false,
   trailing: true,
 });
+
+const debouncedSerialize = debounce(
+  (state, setSerializedState) => {
+    setSerializedState(serializeWheelState(state));
+  },
+  1000,
+  { leading: false, trailing: true }
+);
 
 function getStateFromQueryString() {
   const { wheels } = queryString.parse(window.location.search);
@@ -288,6 +298,7 @@ function getStateFromQueryString() {
 export function useWheels() {
   const [loading, setLoading] = useState(true);
   const [state, dispatch] = useReducer(reducer, defaultState);
+  const [serializedState, setSerializedState] = useState(null);
 
   useEffect(() => {
     const savedState = getStateFromQueryString() || getStateFromLocalStorage();
@@ -310,11 +321,16 @@ export function useWheels() {
     debouncedSave(state);
   }, [state]);
 
+  useEffect(() => {
+    debouncedSerialize(state, setSerializedState);
+  }, [state]);
+
   return {
     dispatch,
     loading,
     wheels,
     isSpinning,
     selectedWheel,
+    serializedState,
   };
 }

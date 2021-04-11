@@ -18,6 +18,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useWindowSize } from "./use-window-size";
 import VerticalScrollAnimation from "./components/VerticalScrollAnimation";
 import { getRandomInteger } from "./components/get-random-integer";
+import ShareLink from "./components/ShareLink";
 
 const skipName = process.env.REACT_APP_SKIP_NAME;
 
@@ -60,6 +61,7 @@ const AddWheelButton = styled.button`
   text-align: center;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 1rem;
   border-radius: 0.5rem;
   border: 3px solid #eee;
   height: 3rem;
@@ -75,7 +77,13 @@ const AddWheelButton = styled.button`
 `;
 
 function App() {
-  const { dispatch, wheels, selectedWheel, loading } = useWheels();
+  const {
+    dispatch,
+    wheels,
+    selectedWheel,
+    loading,
+    serializedState,
+  } = useWheels();
 
   const { width } = useWindowSize();
   const { id: selectedWheelId, label, segments, isSpinning } = selectedWheel;
@@ -267,7 +275,8 @@ function App() {
           ))}
           <AddWheelButton onClick={handleCreateWheel} type="button">
             <FontAwesomeIcon icon={faPlus} /> New wheel
-          </AddWheelButton>
+          </AddWheelButton>{" "}
+          <ShareLink serializedState={serializedState} />
         </NameListContainer>
       </Container>
     </div>
