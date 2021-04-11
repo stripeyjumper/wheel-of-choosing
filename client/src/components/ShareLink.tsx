@@ -3,6 +3,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
+const TopArrow = styled(({ className }) => {
+  return (
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      width="20"
+      height="20"
+    >
+      <polygon points="10,0 20,20 0,20" />
+    </svg>
+  );
+})`
+  margin-left: auto;
+  margin-right: auto;
+  stroke: #fff;
+  fill: #fff;
+`;
+
 const ShareLinkButton = styled.button`
   width: 100%;
   text-align: center;
@@ -60,7 +79,7 @@ function ShareLink({ serializedState }: { serializedState: string | null }) {
   const inputRef = useRef<any>(null);
 
   const handleShareLink = useCallback(() => {
-    setShowTextbox(true);
+    setShowTextbox((prev) => !prev);
   }, []);
 
   useEffect(() => {
@@ -75,23 +94,26 @@ function ShareLink({ serializedState }: { serializedState: string | null }) {
         <FontAwesomeIcon icon={faShare} /> Share link
       </ShareLinkButton>
       {showTextbox ? (
-        <ShareLinkPanel>
-          <ShareLinkHeader>Share a link to these wheels</ShareLinkHeader>
-          <LinkInput
-            ref={inputRef}
-            value={`http://localhost:3000?wheels=${serializedState}` || ""}
-            readOnly={true}
-            onFocus={() => {
-              inputRef.current && inputRef.current.select();
-            }}
-          />
-          <CopyToClipboardButton
-            type="button"
-            onClick={() => console.log("Ok here!")}
-          >
-            <FontAwesomeIcon icon={faCopy} /> Copy to clipboard
-          </CopyToClipboardButton>
-        </ShareLinkPanel>
+        <>
+          <TopArrow />
+          <ShareLinkPanel>
+            <ShareLinkHeader>Share a link to these wheels</ShareLinkHeader>
+            <LinkInput
+              ref={inputRef}
+              value={`http://localhost:3000?wheels=${serializedState}` || ""}
+              readOnly={true}
+              onFocus={() => {
+                inputRef.current && inputRef.current.select();
+              }}
+            />
+            <CopyToClipboardButton
+              type="button"
+              onClick={() => console.log("Ok here!")}
+            >
+              <FontAwesomeIcon icon={faCopy} /> Copy to clipboard
+            </CopyToClipboardButton>
+          </ShareLinkPanel>
+        </>
       ) : null}
     </>
   );
