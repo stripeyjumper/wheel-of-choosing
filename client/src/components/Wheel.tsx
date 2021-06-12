@@ -274,12 +274,7 @@ function Wheel({
           onClick={onSpinStart}
         >
           <FontAwesomeIcon icon={faRedo} spin={isSpinning} /> Spin
-          <CountOfNames>
-            {` ${Math.min(
-              countOfNames,
-              countOfNames - remainingSegments
-            )}/${countOfNames}`}
-          </CountOfNames>
+          <CountOfNames>{` ${remainingSegments}/${countOfNames}`}</CountOfNames>
         </SpinButton>
         <ButtonRow>
           <SmallButton onClick={onReset} disabled={!canReset}>

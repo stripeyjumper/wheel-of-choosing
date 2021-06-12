@@ -1,7 +1,8 @@
 import { faCopy, faShare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { copyTextToClipboard } from "./copy-text-to-clipboard";
 
 const TopArrow = styled(({ className }) => {
   return (
@@ -27,7 +28,7 @@ const ShareLinkButton = styled.button`
   text-align: center;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 1rem;
+  margin-bottom: 3px;
   border-radius: 0.5rem;
   border: 3px solid #eee;
   height: 3rem;
@@ -40,6 +41,8 @@ const ShareLinkButton = styled.button`
   }
   font-size: 14pt;
   outline: none;
+
+  ${({ disabled }) => (disabled ? css`` : "")}
 `;
 
 const ShareLinkPanel = styled.div`
@@ -49,6 +52,7 @@ const ShareLinkPanel = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem;
+  margin-bottom: 1rem;
 `;
 
 const CopyToClipboardButton = styled.button`
@@ -68,13 +72,25 @@ const LinkInput = styled.input`
   border-radius: 0.5rem;
 `;
 
+const Wrapper = styled.div`
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
 const ShareLinkHeader = styled.h5`
   margin-top: 0;
   margin-bottom: 0.2rem;
   color: #333;
 `;
 
-function ShareLink({ serializedState }: { serializedState: string | null }) {
+function ShareLink({
+  serializedState,
+  countOfWheels,
+}: {
+  serializedState: string | null;
+  countOfWheels: number;
+}) {
   const [showTextbox, setShowTextbox] = useState(false);
   const inputRef = useRef<any>(null);
 
@@ -88,19 +104,28 @@ function ShareLink({ serializedState }: { serializedState: string | null }) {
     }
   }, [showTextbox]);
 
+  const url = `${process.env.PUBLIC_URL}?wheels=${serializedState}`;
+  console.log("Ok here!", process.env);
   return (
-    <>
-      <ShareLinkButton onClick={handleShareLink} type="button">
+    <Wrapper>
+      <ShareLinkButton
+        disabled={!serializedState}
+        onClick={handleShareLink}
+        type="button"
+      >
         <FontAwesomeIcon icon={faShare} /> Share link
       </ShareLinkButton>
       {showTextbox ? (
         <>
           <TopArrow />
           <ShareLinkPanel>
-            <ShareLinkHeader>Share a link to these wheels</ShareLinkHeader>
+            <ShareLinkHeader>
+              Share a link to{" "}
+              {countOfWheels > 1 ? "these wheels" : "this wheel"}
+            </ShareLinkHeader>
             <LinkInput
               ref={inputRef}
-              value={`http://localhost:3000?wheels=${serializedState}` || ""}
+              value={url}
               readOnly={true}
               onFocus={() => {
                 inputRef.current && inputRef.current.select();
@@ -108,14 +133,14 @@ function ShareLink({ serializedState }: { serializedState: string | null }) {
             />
             <CopyToClipboardButton
               type="button"
-              onClick={() => console.log("Ok here!")}
+              onClick={() => copyTextToClipboard(url)}
             >
               <FontAwesomeIcon icon={faCopy} /> Copy to clipboard
             </CopyToClipboardButton>
           </ShareLinkPanel>
         </>
       ) : null}
-    </>
+    </Wrapper>
   );
 }
 

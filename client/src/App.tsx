@@ -275,8 +275,11 @@ function App() {
           ))}
           <AddWheelButton onClick={handleCreateWheel} type="button">
             <FontAwesomeIcon icon={faPlus} /> New wheel
-          </AddWheelButton>{" "}
-          <ShareLink serializedState={serializedState} />
+          </AddWheelButton>
+          <ShareLink
+            serializedState={serializedState}
+            countOfWheels={wheels.length}
+          />
         </NameListContainer>
       </Container>
     </div>
