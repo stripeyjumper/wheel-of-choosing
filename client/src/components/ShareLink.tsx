@@ -1,6 +1,12 @@
 import { faCopy, faShare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import styled, { css } from "styled-components";
 import { copyTextToClipboard } from "./copy-text-to-clipboard";
 
@@ -104,7 +110,11 @@ function ShareLink({
     }
   }, [showTextbox]);
 
-  const url = `${process.env.PUBLIC_URL}?wheels=${serializedState}`;
+  const url = useMemo(
+    () => `${window.location.origin}?wheels=${serializedState}`,
+    [serializedState]
+  );
+
   console.log("Ok here!", process.env);
   return (
     <Wrapper>
