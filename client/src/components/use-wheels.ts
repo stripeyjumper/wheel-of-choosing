@@ -18,7 +18,7 @@ import { debounce } from "lodash";
 import {
   serializeWheelState,
   deserializeWheelState,
-} from "./serializeWheelState";
+} from "./serialize-wheel-state";
 import queryString from "query-string";
 
 const LOCAL_STORAGE_KEY = "wheels";

@@ -3,8 +3,11 @@ import { compress, decompress } from "lzutf8";
 import { WheelManagerState } from "./types";
 import Ajv, { JTDSchemaType } from "ajv/dist/jtd";
 
+const schemaVersion = "1";
+
 /** Compact format for serializing wheel state */
 interface SavedState {
+  v: string;
   w: {
     l: string;
     s: string[];
@@ -14,6 +17,7 @@ interface SavedState {
 
 const schema: JTDSchemaType<SavedState> = {
   properties: {
+    v: { type: "string" },
     w: {
       elements: {
         properties: {
@@ -42,6 +46,7 @@ function mapToSavedState({
   selectedWheelId,
 }: WheelManagerState): SavedState {
   return {
+    v: schemaVersion,
     i: wheels.findIndex(({ id }) => id === selectedWheelId),
     w: wheels.map(({ label, segments }) => ({
       l: label as string,
