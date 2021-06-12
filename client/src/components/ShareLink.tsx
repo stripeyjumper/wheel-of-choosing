@@ -9,6 +9,8 @@ import React, {
 } from "react";
 import styled, { css } from "styled-components";
 import { copyTextToClipboard } from "./copy-text-to-clipboard";
+import ExpandingButton from "./ExpandingButton";
+import { useOutsideAlerter } from "./use-outside-alerter";
 
 const TopArrow = styled(({ className }) => {
   return (
@@ -29,7 +31,7 @@ const TopArrow = styled(({ className }) => {
   fill: #fff;
 `;
 
-const ShareLinkButton = styled.button`
+const ShareLinkButton = styled.button<any>`
   width: 100%;
   text-align: center;
   margin-left: auto;
@@ -45,6 +47,14 @@ const ShareLinkButton = styled.button`
     border-color: #115da8;
     color: white;
   }
+  ${({ $open }) =>
+    $open
+      ? css`
+          background-color: #115da8;
+          border-color: #115da8;
+          color: white;
+        `
+      : ""}
   font-size: 14pt;
   outline: none;
 
@@ -61,7 +71,7 @@ const ShareLinkPanel = styled.div`
   margin-bottom: 1rem;
 `;
 
-const CopyToClipboardButton = styled.button`
+const CopyToClipboardButton = styled(ExpandingButton)`
   text-align: left;
   border: none;
   color: #115da8;
@@ -69,6 +79,7 @@ const CopyToClipboardButton = styled.button`
   outline: none;
   text-decoration: none;
   cursor: pointer;
+  margin-right: auto;
 `;
 
 const LinkInput = styled.input`
@@ -97,6 +108,7 @@ function ShareLink({
   serializedState: string | null;
   countOfWheels: number;
 }) {
+  const panelRef = useRef<any>(null);
   const [showTextbox, setShowTextbox] = useState(false);
   const inputRef = useRef<any>(null);
 
@@ -115,13 +127,17 @@ function ShareLink({
     [serializedState]
   );
 
-  console.log("Ok here!", process.env);
+  useOutsideAlerter(panelRef, () => {
+    setShowTextbox(false);
+  });
+
   return (
-    <Wrapper>
+    <Wrapper ref={panelRef}>
       <ShareLinkButton
         disabled={!serializedState}
         onClick={handleShareLink}
         type="button"
+        $open={showTextbox}
       >
         <FontAwesomeIcon icon={faShare} /> Share link
       </ShareLinkButton>
