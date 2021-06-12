@@ -21,7 +21,7 @@ import {
 } from "./serialize-wheel-state";
 import queryString from "query-string";
 
-const LOCAL_STORAGE_KEY = "wheels";
+const LOCAL_STORAGE_KEY = "wheel_state";
 
 const defaultWheelId = uuid();
 
@@ -265,6 +265,20 @@ function getStateFromLocalStorage() {
   return savedState ? deserializeWheelState(savedState) : null;
 }
 
+function getLegacyStateFromLocalStorage() {
+  const savedState = window.localStorage.getItem("wheels");
+  let result = null;
+  if (savedState) {
+    window.localStorage.removeItem("wheels");
+    try {
+      result = JSON.parse(savedState) as WheelManagerState;
+    } catch (err) {
+      console.error("Error getting wheel state from local storage");
+    }
+  }
+  return result;
+}
+
 const debouncedSave = debounce(saveStateToLocalStorage, 1000, {
   leading: false,
   trailing: true,
@@ -301,7 +315,11 @@ export function useWheels() {
   const [serializedState, setSerializedState] = useState(null);
 
   useEffect(() => {
-    const savedState = getStateFromQueryString() || getStateFromLocalStorage();
+    const savedState =
+      getStateFromQueryString() ||
+      getStateFromLocalStorage() ||
+      getLegacyStateFromLocalStorage();
+
     if (savedState) {
       dispatch({
         type: "REPLACE_STATE",
