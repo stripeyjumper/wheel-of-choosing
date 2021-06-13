@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { compress, decompress } from "lzutf8";
-import { WheelManagerState } from "./types";
+import { WheelManagerState } from "../components/types";
 import Ajv, { JTDSchemaType } from "ajv/dist/jtd";
 
 const schemaVersion = "1";

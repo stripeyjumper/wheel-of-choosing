@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { v4 as uuid } from "uuid";
 import {
   Action,
@@ -18,7 +18,7 @@ import { debounce } from "lodash";
 import {
   serializeWheelState,
   deserializeWheelState,
-} from "./serialize-wheel-state";
+} from "../helpers/serialize-wheel-state";
 import queryString from "query-string";
 
 const LOCAL_STORAGE_KEY = "wheel_state";
@@ -256,10 +256,6 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
   }
 }
 
-function saveStateToLocalStorage(state: WheelManagerState) {
-  window.localStorage.setItem(LOCAL_STORAGE_KEY, serializeWheelState(state));
-}
-
 function getStateFromLocalStorage() {
   const savedState = window.localStorage.getItem(LOCAL_STORAGE_KEY);
   return savedState ? deserializeWheelState(savedState) : null;
@@ -278,19 +274,6 @@ function getLegacyStateFromLocalStorage() {
   }
   return result;
 }
-
-const debouncedSave = debounce(saveStateToLocalStorage, 1000, {
-  leading: false,
-  trailing: true,
-});
-
-const debouncedSerialize = debounce(
-  (state, setSerializedState) => {
-    setSerializedState(serializeWheelState(state));
-  },
-  1000,
-  { leading: false, trailing: true }
-);
 
 function getStateFromQueryString() {
   const { wheels } = queryString.parse(window.location.search);
@@ -312,8 +295,9 @@ function getStateFromQueryString() {
 export function useWheels() {
   const [loading, setLoading] = useState(true);
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const [serializedState, setSerializedState] = useState(null);
+  const [serializedState, setSerializedState] = useState<string | null>(null);
 
+  // Get initial state from querystring or localstorage
   useEffect(() => {
     const savedState =
       getStateFromQueryString() ||
@@ -335,13 +319,26 @@ export function useWheels() {
     ({ id }) => id === selectedWheelId
   ) as Wheel;
 
-  useEffect(() => {
-    debouncedSave(state);
-  }, [state]);
+  // Debounced function to serialize and save the wheel state
+  const handleAutoSave = useMemo(
+    () =>
+      debounce(
+        (nextState: WheelManagerState) => {
+          const serialized = serializeWheelState(nextState);
+          setSerializedState(serialized);
+          window.localStorage.setItem(LOCAL_STORAGE_KEY, serialized);
+        },
+        1000, // Wait 1 second before saving
+        { leading: false, trailing: true }
+      ),
+    []
+  );
 
   useEffect(() => {
-    debouncedSerialize(state, setSerializedState);
-  }, [state]);
+    if (!loading) {
+      handleAutoSave(state);
+    }
+  }, [state, handleAutoSave, loading]);
 
   return {
     dispatch,

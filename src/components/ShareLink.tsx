@@ -1,4 +1,8 @@
-import { faCopy, faShare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCopy,
+  faShare,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, {
   useCallback,
@@ -8,9 +12,9 @@ import React, {
   useState,
 } from "react";
 import styled, { css } from "styled-components";
-import { copyTextToClipboard } from "./copy-text-to-clipboard";
+import { copyTextToClipboard } from "../helpers/copy-text-to-clipboard";
 import ExpandingButton from "./ExpandingButton";
-import { useOutsideAlerter } from "./use-outside-alerter";
+import { useOutsideAlerter } from "../helpers/use-outside-alerter";
 
 const TopArrow = styled(({ className }) => {
   return (
@@ -131,6 +135,9 @@ function ShareLink({
     setShowTextbox(false);
   });
 
+  // Limit the serialized string to 1024 characters
+  const tooLong = !!serializedState && serializedState.length > 1024;
+
   return (
     <Wrapper ref={panelRef}>
       <ShareLinkButton
@@ -145,24 +152,33 @@ function ShareLink({
         <>
           <TopArrow />
           <ShareLinkPanel>
-            <ShareLinkHeader>
-              Share a link to{" "}
-              {countOfWheels > 1 ? "these wheels" : "this wheel"}
-            </ShareLinkHeader>
-            <LinkInput
-              ref={inputRef}
-              value={url}
-              readOnly={true}
-              onFocus={() => {
-                inputRef.current && inputRef.current.select();
-              }}
-            />
-            <CopyToClipboardButton
-              type="button"
-              onClick={() => copyTextToClipboard(url)}
-            >
-              <FontAwesomeIcon icon={faCopy} /> Copy to clipboard
-            </CopyToClipboardButton>
+            {tooLong ? (
+              <p>
+                <FontAwesomeIcon icon={faExclamationTriangle} /> There are too
+                many names to create a link, sorry!
+              </p>
+            ) : (
+              <>
+                <ShareLinkHeader>
+                  Share a link to{" "}
+                  {countOfWheels > 1 ? "these wheels" : "this wheel"}
+                </ShareLinkHeader>
+                <LinkInput
+                  ref={inputRef}
+                  value={url}
+                  readOnly={true}
+                  onFocus={() => {
+                    inputRef.current && inputRef.current.select();
+                  }}
+                />
+                <CopyToClipboardButton
+                  type="button"
+                  onClick={() => copyTextToClipboard(url)}
+                >
+                  <FontAwesomeIcon icon={faCopy} /> Copy to clipboard
+                </CopyToClipboardButton>
+              </>
+            )}
           </ShareLinkPanel>
         </>
       ) : null}
