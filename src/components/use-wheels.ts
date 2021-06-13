@@ -20,6 +20,7 @@ import {
   deserializeWheelState,
 } from "../helpers/serialize-wheel-state";
 import queryString from "query-string";
+import { useDispatch, useSelector } from "react-redux";
 
 const LOCAL_STORAGE_KEY = "wheel_state";
 
@@ -105,7 +106,12 @@ function updateSegments(segments: WheelSegment[], labels: string[]) {
   return nextSegments as WheelSegment[];
 }
 
-function reducer(state: WheelManagerState, action: Action): WheelManagerState {
+export function reducer(
+  state = defaultState,
+  action: Action
+): WheelManagerState {
+  console.log("Reducing!", action);
+
   switch (action.type) {
     case "UPDATE_SEGMENTS": {
       const { id, labels } = action as UpdateSegmentsAction;
@@ -252,7 +258,7 @@ function reducer(state: WheelManagerState, action: Action): WheelManagerState {
       return { ...state };
     }
     default:
-      throw new Error();
+      return state;
   }
 }
 
@@ -293,8 +299,10 @@ function getStateFromQueryString() {
 }
 
 export function useWheels() {
+  const dispatch = useDispatch();
+  const state = useSelector<WheelManagerState, WheelManagerState>((s) => s);
+
   const [loading, setLoading] = useState(true);
-  const [state, dispatch] = useReducer(reducer, defaultState);
   const [serializedState, setSerializedState] = useState<string | null>(null);
 
   // Get initial state from querystring or localstorage
@@ -311,7 +319,7 @@ export function useWheels() {
       } as ReplaceStateAction);
     }
     setLoading(false);
-  }, []);
+  }, [dispatch]);
 
   const { wheels, selectedWheelId, isSpinning } = state;
 
@@ -341,7 +349,6 @@ export function useWheels() {
   }, [state, handleAutoSave, loading]);
 
   return {
-    dispatch,
     loading,
     wheels,
     isSpinning,
