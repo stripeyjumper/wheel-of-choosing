@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import NameList from "./components/NameList";
 import Wheel from "./components/Wheel";
-import { getColors } from "./get-colors";
+import { getColors } from "./helpers/get-colors";
 import styled from "styled-components";
 import {
   UpdateSegmentsAction,
@@ -15,9 +15,9 @@ import { useWheels } from "./components/use-wheels";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import { useWindowSize } from "./use-window-size";
+import { useWindowSize } from "./helpers/use-window-size";
 import VerticalScrollAnimation from "./components/VerticalScrollAnimation";
-import { getRandomInteger } from "./components/get-random-integer";
+import { getRandomInteger } from "./helpers/get-random-integer";
 import ShareLink from "./components/ShareLink";
 
 const skipName = process.env.REACT_APP_SKIP_NAME;
@@ -77,13 +77,8 @@ const AddWheelButton = styled.button`
 `;
 
 function App() {
-  const {
-    dispatch,
-    wheels,
-    selectedWheel,
-    loading,
-    serializedState,
-  } = useWheels();
+  const { dispatch, wheels, selectedWheel, loading, serializedState } =
+    useWheels();
 
   const { width } = useWindowSize();
   const { id: selectedWheelId, label, segments, isSpinning } = selectedWheel;
@@ -128,9 +123,8 @@ function App() {
           nextSegments.length - 1
         );
 
-        const { id: nextSelectedSegmentId } = nextSegments[
-          selectedSegmentIndex
-        ];
+        const { id: nextSelectedSegmentId } =
+          nextSegments[selectedSegmentIndex];
 
         dispatch({
           type: "START_SPIN",

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import WheelSegment, { EmptyWheel } from "./WheelSegment";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
-import { getRandomInteger } from "./get-random-integer";
+import { getRandomInteger } from "../helpers/get-random-integer";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
