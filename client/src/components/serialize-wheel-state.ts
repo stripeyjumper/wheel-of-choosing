@@ -7,11 +7,16 @@ const schemaVersion = "1";
 
 /** Compact format for serializing wheel state */
 interface SavedState {
+  /** Version number */
   v: string;
+  /** Wheels */
   w: {
+    /** Label */
     l: string;
+    /** Segment names  */
     s: string[];
   }[];
+  /** Selected wheel index */
   i: number;
 }
 
