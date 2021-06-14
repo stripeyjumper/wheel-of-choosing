@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import styled from "styled-components";
-import { Wheel } from "./types";
+import { Wheel } from "../service/types";
 import AutosizeInput from "react-input-autosize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -129,9 +129,10 @@ function NameList({
   const containerRef = useRef<any>(null);
   const textAreaRef = useRef<any>(null);
 
-  const onNameChange = useCallback((e) => onUpdateWheel(e.target.value), [
-    onUpdateWheel,
-  ]);
+  const onNameChange = useCallback(
+    (e) => onUpdateWheel(e.target.value),
+    [onUpdateWheel]
+  );
 
   const names = useMemo(() => {
     return segments.map(({ label }) => label).join("\n");

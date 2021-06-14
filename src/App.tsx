@@ -1,10 +1,10 @@
 import React from "react";
 import MainPage from "./components/MainPage";
 import { Provider } from "react-redux";
-import { reducer } from "./components/use-wheels";
-import { createStore } from "@reduxjs/toolkit";
+import reducer from "./service/wheel-reducer";
+import { configureStore } from "@reduxjs/toolkit";
 
-const store = createStore(reducer);
+const store = configureStore({ reducer });
 
 function App() {
   return (

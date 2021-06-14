@@ -1,25 +1,27 @@
 import React, { useCallback, useMemo, useState } from "react";
-import NameList from "./NameList";
-import Wheel from "./Wheel";
-import { getColors } from "../helpers/get-colors";
 import styled from "styled-components";
-import {
-  UpdateSegmentsAction,
-  DeleteWheelAction,
-  ResetWheelAction,
-  SelectWheelAction,
-  StartSpinAction,
-  UpdateWheelAction,
-} from "./types";
-import { useWheels } from "./use-wheels";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
+import Wheel from "./Wheel";
+import NameList from "./NameList";
+import { getColors } from "../helpers/get-colors";
+import { useWheels } from "../service/use-wheels";
 import { useWindowSize } from "../helpers/use-window-size";
 import VerticalScrollAnimation from "./VerticalScrollAnimation";
 import { getRandomInteger } from "../helpers/get-random-integer";
 import ShareLink from "./ShareLink";
 import { useDispatch } from "react-redux";
+import {
+  createWheel,
+  endSpin,
+  resetWheel,
+  startSpin,
+  updateSegments,
+  selectWheel,
+  deleteWheel,
+  updateWheel,
+} from "../service/wheel-reducer";
 
 const skipName = process.env.REACT_APP_SKIP_NAME;
 
@@ -127,40 +129,27 @@ function MainPage() {
         const { id: nextSelectedSegmentId } =
           nextSegments[selectedSegmentIndex];
 
-        dispatch({
-          type: "START_SPIN",
-          id: selectedWheelId,
-          nextSelectedSegmentId,
-        } as StartSpinAction);
+        dispatch(startSpin({ id: selectedWheelId, nextSelectedSegmentId }));
       }
     }
   }, [dispatch, segments, selectedWheelId, isSpinning]);
 
-  const handleSpinEnd = useCallback(() => {
-    dispatch({ type: "END_SPIN" });
-  }, [dispatch]);
+  const handleSpinEnd = useCallback(() => dispatch(endSpin()), [dispatch]);
 
   const handleReplaceSegments = useCallback(
-    (id: string) => (labels: string[]) => {
-      dispatch({
-        type: "UPDATE_SEGMENTS",
-        id,
-        labels,
-      } as UpdateSegmentsAction);
-    },
+    (id: string) => (labels: string[]) =>
+      dispatch(updateSegments({ id, labels })),
     [dispatch]
   );
 
   const handleReset = useCallback(
-    (id: string) => () => {
-      dispatch({ type: "RESET_WHEEL", id } as ResetWheelAction);
-    },
+    (id: string) => () => dispatch(resetWheel({ id })),
     [dispatch]
   );
 
   const handleCreateWheel = useCallback(() => {
     setScrollDirection("down");
-    dispatch({ type: "CREATE_WHEEL" });
+    dispatch(createWheel());
   }, [dispatch]);
 
   const handleSelect = useCallback(
@@ -170,10 +159,7 @@ function MainPage() {
 
       setScrollDirection(nextIndex > currentIndex ? "down" : "up");
 
-      dispatch({
-        type: "SELECT_WHEEL",
-        id: nextId,
-      } as SelectWheelAction);
+      dispatch(selectWheel({ id: nextId }));
     },
     [dispatch, selectedWheelId, wheels]
   );
@@ -185,21 +171,14 @@ function MainPage() {
         setScrollDirection(index < wheels.length - 1 ? "down" : "up");
       }
 
-      dispatch({
-        type: "DELETE_WHEEL",
-        id,
-      } as DeleteWheelAction);
+      dispatch(deleteWheel({ id }));
     },
     [dispatch, wheels, selectedWheelId]
   );
 
   const handleUpdateWheel = useCallback(
     (id: string) => (name: string) => {
-      dispatch({
-        type: "UPDATE_WHEEL",
-        id,
-        label: name,
-      } as UpdateWheelAction);
+      dispatch(updateWheel({ id, label: name }));
     },
     [dispatch]
   );
@@ -211,10 +190,7 @@ function MainPage() {
 
       setScrollDirection("down");
 
-      dispatch({
-        type: "SELECT_WHEEL",
-        id: nextId,
-      } as SelectWheelAction);
+      dispatch(selectWheel({ id: nextId }));
     }
   }, [dispatch, wheels, selectedWheelId]);
 
