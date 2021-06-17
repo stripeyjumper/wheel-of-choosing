@@ -27,6 +27,7 @@ export interface WheelManagerState {
   selectedWheelIndex: number;
   prevSelectedWheelIndex?: number;
   isSpinning: boolean;
+  showDataUrl: boolean;
 }
 
 export interface LegacyWheelManagerState {

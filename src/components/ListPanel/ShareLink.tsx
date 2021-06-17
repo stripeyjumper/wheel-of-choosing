@@ -12,9 +12,12 @@ import React, {
   useState,
 } from "react";
 import styled, { css } from "styled-components";
+import { useDispatch } from "react-redux";
+
 import { copyTextToClipboard } from "../../helpers/copy-text-to-clipboard";
 import ExpandingButton from "../ExpandingButton";
 import { useOutsideAlerter } from "../../helpers/use-outside-alerter";
+import { setShowDataUrl } from "../../services/wheel-reducer";
 
 const TopArrow = styled(({ className }) => {
   return (
@@ -115,10 +118,12 @@ function ShareLink({
   const panelRef = useRef<any>(null);
   const [showTextbox, setShowTextbox] = useState(false);
   const inputRef = useRef<any>(null);
+  const dispatch = useDispatch();
 
   const handleShareLink = useCallback(() => {
     setShowTextbox((prev) => !prev);
-  }, []);
+    dispatch(setShowDataUrl(true));
+  }, [dispatch]);
 
   useEffect(() => {
     if (showTextbox && inputRef.current) {

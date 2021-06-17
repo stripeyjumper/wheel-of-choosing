@@ -20,6 +20,7 @@ const defaultState: WheelManagerState = {
   selectedWheelIndex: 0,
   prevSelectedWheelIndex: undefined,
   isSpinning: false,
+  showDataUrl: false,
 };
 
 function updateItemInArray<TItem extends { id: any }>(
@@ -270,6 +271,12 @@ const reducers = {
     const nextState = action.payload;
     return { ...nextState };
   },
+  setShowDataUrl(state: WheelManagerState, action: PayloadAction<boolean>) {
+    return {
+      ...state,
+      showDataUrl: action.payload,
+    };
+  },
 };
 
 const wheelSlice = createSlice({
@@ -288,6 +295,7 @@ export const {
   deleteWheel,
   selectWheel,
   replaceState,
+  setShowDataUrl,
 } = wheelSlice.actions;
 
 export default wheelSlice.reducer;

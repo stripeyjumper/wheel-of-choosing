@@ -81,6 +81,7 @@ function mapFromSavedState(savedState: SavedState): WheelManagerState {
     wheels,
     selectedWheelIndex: selectedWheelIndex || 0,
     isSpinning: false,
+    showDataUrl: false,
   };
 }
 /**

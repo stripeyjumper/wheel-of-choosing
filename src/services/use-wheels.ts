@@ -7,9 +7,11 @@ import {
 } from "./serialize-wheel-state";
 import queryString from "query-string";
 import { useDispatch, useSelector } from "react-redux";
+import { createBrowserHistory } from "history";
 
 import { replaceState } from "./wheel-reducer";
 
+const history = createBrowserHistory();
 const LOCAL_STORAGE_KEY = "wheel_state";
 
 function getStateFromLocalStorage() {
@@ -32,6 +34,7 @@ function getLegacyStateFromLocalStorage() {
           wheels: data.wheels,
           selectedWheelIndex,
           isSpinning: false,
+          showDataUrl: false,
         };
       }
     } catch (err) {
@@ -44,16 +47,7 @@ function getLegacyStateFromLocalStorage() {
 function getStateFromQueryString() {
   const { wheels } = queryString.parse(window.location.search);
   if (wheels && typeof wheels === "string") {
-    const state = deserializeWheelState(wheels);
-    if (state) {
-      const { pathname, origin } = window.location;
-      window.history.replaceState(
-        {},
-        "Wheel of choosing",
-        `${origin}${pathname}`
-      );
-      return state;
-    }
+    return deserializeWheelState(wheels);
   }
   return null;
 }
@@ -85,8 +79,13 @@ export function useWheels(): {
     setLoading(false);
   }, [dispatch]);
 
-  const { wheels, selectedWheelIndex, prevSelectedWheelIndex, isSpinning } =
-    state;
+  const {
+    wheels,
+    selectedWheelIndex,
+    prevSelectedWheelIndex,
+    isSpinning,
+    showDataUrl,
+  } = state;
 
   const selectedWheel = wheels[selectedWheelIndex] as Wheel;
 
@@ -108,11 +107,16 @@ export function useWheels(): {
           const serialized = serializeWheelState(nextState);
           setSerializedState(serialized);
           window.localStorage.setItem(LOCAL_STORAGE_KEY, serialized);
+          if (showDataUrl && serialized && serialized.length <= 1024) {
+            history.replace({ pathname: "/", search: `?wheels=${serialized}` });
+          } else {
+            history.replace({ pathname: "/", search: "" });
+          }
         },
         1000, // Wait 1 second before saving
-        { leading: false, trailing: true }
+        { leading: true, trailing: true }
       ),
-    []
+    [showDataUrl]
   );
 
   useEffect(() => {
