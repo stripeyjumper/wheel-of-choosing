@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { WheelManagerState, Wheel } from "./types";
+import { WheelManagerState, Wheel, LegacyWheelManagerState } from "./types";
 import { debounce } from "lodash";
 import {
   serializeWheelState,
@@ -19,11 +19,21 @@ function getStateFromLocalStorage() {
 
 function getLegacyStateFromLocalStorage() {
   const savedState = window.localStorage.getItem("wheels");
-  let result = null;
+  let result: WheelManagerState | null = null;
   if (savedState) {
     window.localStorage.removeItem("wheels");
     try {
-      result = JSON.parse(savedState) as WheelManagerState;
+      const data = JSON.parse(savedState) as LegacyWheelManagerState;
+      if (data.selectedWheelId) {
+        const selectedWheelIndex = data.wheels.findIndex(
+          ({ id }) => id === data.selectedWheelId
+        );
+        result = {
+          wheels: data.wheels,
+          selectedWheelIndex,
+          isSpinning: false,
+        };
+      }
     } catch (err) {
       console.error("Error getting wheel state from local storage");
     }
@@ -48,7 +58,14 @@ function getStateFromQueryString() {
   return null;
 }
 
-export function useWheels() {
+export function useWheels(): {
+  loading: boolean;
+  wheels: Wheel[];
+  isSpinning: boolean;
+  selectedWheel: Wheel;
+  serializedState?: string | null;
+  scrollDirection: "up" | "down" | null;
+} {
   const dispatch = useDispatch();
   const state = useSelector<WheelManagerState, WheelManagerState>((s) => s);
 
@@ -68,11 +85,20 @@ export function useWheels() {
     setLoading(false);
   }, [dispatch]);
 
-  const { wheels, selectedWheelId, isSpinning } = state;
+  const { wheels, selectedWheelIndex, prevSelectedWheelIndex, isSpinning } =
+    state;
 
-  const selectedWheel = wheels.find(
-    ({ id }) => id === selectedWheelId
-  ) as Wheel;
+  const selectedWheel = wheels[selectedWheelIndex] as Wheel;
+
+  const scrollDirection = useMemo(() => {
+    if (
+      prevSelectedWheelIndex === undefined ||
+      prevSelectedWheelIndex === selectedWheelIndex
+    ) {
+      return null;
+    }
+    return prevSelectedWheelIndex < selectedWheelIndex ? "down" : "up";
+  }, [selectedWheelIndex, prevSelectedWheelIndex]);
 
   // Debounced function to serialize and save the wheel state
   const handleAutoSave = useMemo(
@@ -101,5 +127,6 @@ export function useWheels() {
     isSpinning,
     selectedWheel,
     serializedState,
+    scrollDirection,
   };
 }

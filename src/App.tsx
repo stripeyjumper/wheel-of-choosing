@@ -1,17 +1,21 @@
 import React from "react";
-import MainPage from "./components/MainPage";
 import { Provider } from "react-redux";
-import reducer from "./service/wheel-reducer";
+import reducer from "./services/wheel-reducer";
 import { configureStore } from "@reduxjs/toolkit";
+
+import WheelPanel from "./components/WheelPanel";
+import ListPanel from "./components/ListPanel";
+import PageContainer from "./components/PageContainer";
 
 const store = configureStore({ reducer });
 
 function App() {
   return (
     <Provider store={store}>
-      <div className="App">
-        <MainPage />
-      </div>
+      <PageContainer className="App">
+        <WheelPanel />
+        <ListPanel />
+      </PageContainer>
     </Provider>
   );
 }

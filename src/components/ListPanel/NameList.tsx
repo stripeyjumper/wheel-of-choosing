@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import styled from "styled-components";
-import { Wheel } from "../service/types";
+import { Wheel } from "../../services/types";
 import AutosizeInput from "react-input-autosize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";

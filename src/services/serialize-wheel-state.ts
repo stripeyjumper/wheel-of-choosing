@@ -48,11 +48,11 @@ const validateSavedState = new Ajv().compile(schema);
 /** Prepare wheel state to be saved */
 function mapToSavedState({
   wheels,
-  selectedWheelId,
+  selectedWheelIndex,
 }: WheelManagerState): SavedState {
   return {
     v: schemaVersion,
-    i: wheels.findIndex(({ id }) => id === selectedWheelId),
+    i: selectedWheelIndex,
     w: wheels.map(({ label, segments }) => ({
       l: label as string,
       s: segments
@@ -79,7 +79,7 @@ function mapFromSavedState(savedState: SavedState): WheelManagerState {
 
   return {
     wheels,
-    selectedWheelId: wheels[selectedWheelIndex || 0].id,
+    selectedWheelIndex: selectedWheelIndex || 0,
     isSpinning: false,
   };
 }

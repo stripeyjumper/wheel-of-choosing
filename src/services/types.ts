@@ -24,6 +24,13 @@ export interface Wheel {
 
 export interface WheelManagerState {
   wheels: Wheel[];
-  selectedWheelId?: string;
+  selectedWheelIndex: number;
+  prevSelectedWheelIndex?: number;
+  isSpinning: boolean;
+}
+
+export interface LegacyWheelManagerState {
+  wheels: Wheel[];
+  selectedWheelId: string;
   isSpinning: boolean;
 }

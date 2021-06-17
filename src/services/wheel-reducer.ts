@@ -2,12 +2,10 @@ import { v4 as uuid } from "uuid";
 import { WheelManagerState, WheelSegment } from "./types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const defaultWheelId = uuid();
-
 const defaultState: WheelManagerState = {
   wheels: [
     {
-      id: defaultWheelId,
+      id: uuid(),
       label: "Wheel of choosing",
       segments: [
         { id: uuid(), label: "Name 1" },
@@ -19,7 +17,8 @@ const defaultState: WheelManagerState = {
       isSpinning: false,
     },
   ],
-  selectedWheelId: defaultWheelId,
+  selectedWheelIndex: 0,
+  prevSelectedWheelIndex: undefined,
   isSpinning: false,
 };
 
@@ -157,11 +156,11 @@ const reducers = {
     };
   },
   endSpin(state: WheelManagerState) {
-    const { selectedWheelId, wheels } = state;
-
+    const { selectedWheelIndex, wheels } = state;
+    const { id } = wheels[selectedWheelIndex];
     return {
       ...state,
-      wheels: updateItemInArray(wheels, selectedWheelId, (wheel) => {
+      wheels: updateItemInArray(wheels, id, (wheel) => {
         if (wheel.isSpinning) {
           return {
             ...wheel,
@@ -202,7 +201,8 @@ const reducers = {
             isSpinning: false,
           },
         ],
-        selectedWheelId: id,
+        prevSelectedWheelIndex: state.selectedWheelIndex,
+        selectedWheelIndex: state.wheels.length,
       };
     },
     prepare() {
@@ -234,39 +234,39 @@ const reducers = {
       throw new Error("The last wheel cannot be deleted");
     }
 
+    const prevSelectedWheelIndex = state.selectedWheelIndex;
     const nextWheels = deleteItemFromArray(state.wheels, id);
-    let selectedWheelId: string | undefined = state.selectedWheelId;
 
-    if (id === selectedWheelId) {
-      const deletedIndex = state.wheels.findIndex(
-        ({ id: wheelId }) => wheelId === id
-      );
-      const index = Math.min(deletedIndex, nextWheels.length - 1);
-      selectedWheelId = index >= 0 ? nextWheels[index].id : undefined;
-    }
+    const selectedWheelIndex = Math.min(
+      prevSelectedWheelIndex,
+      nextWheels.length - 1
+    );
 
     return {
       ...state,
       wheels: nextWheels,
-      selectedWheelId,
+      prevSelectedWheelIndex,
+      selectedWheelIndex,
     };
   },
   selectWheel(state: WheelManagerState, action: PayloadAction<{ id: string }>) {
     const { id } = action.payload;
+    const prevSelectedWheelIndex = state.selectedWheelIndex;
+    const selectedWheelIndex = state.wheels.findIndex(
+      ({ id: wheelId }) => wheelId === id
+    );
     return {
       ...state,
       wheels: updateItemInArray(
         state.wheels,
-        state.selectedWheelId,
+        state.wheels[prevSelectedWheelIndex].id,
         (wheel) => ({ ...wheel, isSpinning: false })
       ),
-      selectedWheelId: id,
+      prevSelectedWheelIndex,
+      selectedWheelIndex,
     };
   },
-  replaceState(
-    state: WheelManagerState,
-    action: PayloadAction<WheelManagerState>
-  ) {
+  replaceState(_: WheelManagerState, action: PayloadAction<WheelManagerState>) {
     const nextState = action.payload;
     return { ...nextState };
   },

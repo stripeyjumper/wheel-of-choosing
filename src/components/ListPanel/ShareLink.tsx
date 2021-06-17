@@ -12,9 +12,9 @@ import React, {
   useState,
 } from "react";
 import styled, { css } from "styled-components";
-import { copyTextToClipboard } from "../helpers/copy-text-to-clipboard";
-import ExpandingButton from "./ExpandingButton";
-import { useOutsideAlerter } from "../helpers/use-outside-alerter";
+import { copyTextToClipboard } from "../../helpers/copy-text-to-clipboard";
+import ExpandingButton from "../ExpandingButton";
+import { useOutsideAlerter } from "../../helpers/use-outside-alerter";
 
 const TopArrow = styled(({ className }) => {
   return (
@@ -109,7 +109,7 @@ function ShareLink({
   serializedState,
   countOfWheels,
 }: {
-  serializedState: string | null;
+  serializedState?: string | null;
   countOfWheels: number;
 }) {
   const panelRef = useRef<any>(null);
