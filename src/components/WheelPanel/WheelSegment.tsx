@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { getContrastingTextColor } from "../get-colors";
+import { getContrastingTextColor } from "../../helpers/get-colors";
 
 const SegmentCircle = styled.circle`
   vector-effect: non-scaling-stroke;

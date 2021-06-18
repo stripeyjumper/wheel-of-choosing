@@ -56,11 +56,15 @@ function VerticalScrollAnimation({
   enabled = true,
 }: {
   children: React.ReactNode;
-  scrollDirection: "up" | "down";
+  scrollDirection: "up" | "down" | null;
   id: any;
   enabled?: boolean;
 }) {
-  const direction = scrollDirection === "up" ? -1 : 1;
+  let direction = 0;
+  if (scrollDirection) {
+    direction = scrollDirection === "up" ? -1 : 1;
+  }
+
   return enabled ? (
     <ScrollContainer>
       <AnimatePresence initial={false} custom={direction}>

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import WheelSegment, { EmptyWheel } from "./WheelSegment";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
-import { getRandomInteger } from "./get-random-integer";
+import { getRandomInteger } from "../../helpers/get-random-integer";
 import styled, { css } from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,7 +9,7 @@ import {
   faRedo,
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
-import BigButton from "./BigButton";
+import BigButton from "../BigButton";
 import PointyFinger from "./PointyFinger";
 
 interface WheelProps {
@@ -273,7 +273,7 @@ function Wheel({
           disabled={isSpinning || segments.length <= 1}
           onClick={onSpinStart}
         >
-          <FontAwesomeIcon icon={faRedo} spin={isSpinning} /> Spin
+          <FontAwesomeIcon icon={faRedo} spin={isSpinning} /> Spin{" "}
           <CountOfNames>
             {` ${Math.min(
               countOfNames,
