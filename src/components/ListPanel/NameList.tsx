@@ -65,7 +65,7 @@ const WheelNameInput = styled<any>(AutosizeInput)`
 const ListContainer = styled.div<any>`
   margin-bottom: 1rem;
   border: 0.5rem solid ${({ $active, $color }) => ($active ? $color : "#eee")};
-  min-width: 15rem;
+  min-width: 18rem;
   border-radius: 1rem;
 
   :focus-within {
