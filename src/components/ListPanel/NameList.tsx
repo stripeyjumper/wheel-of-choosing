@@ -18,11 +18,67 @@ interface NameListProps {
   color: string;
 }
 
+const StyledTextArea = styled<any>(TextareaAutosize)`
+  border: none;
+  font-family: inherit;
+  font-size: 12pt;
+
+  resize: none;
+  overflow: hidden;
+  line-height: 1.5;
+  padding: 0.3rem 0.5rem;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  outline: none;
+  background-color: inherit;
+  :focus-within {
+    border: 2px solid #bbb;
+    background-color: white;
+    color: black;
+  }
+`;
+
+const WheelNameInput = styled<any>(AutosizeInput)`
+  display: block;
+  margin: 0;
+  padding: 0.3rem 0.5rem;
+  font-size: 10pt;
+  border: 2px solid transparent;
+  background-color: transparent;
+  border-radius: 0.5rem;
+
+  :focus-within {
+    border: 2px solid #bbb;
+    background-color: white;
+  }
+  input {
+    font-family: "Varela Round", sans-serif;
+    font-size: 16pt;
+    font-weight: bold;
+    outline: none;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+  }
+`;
+
 const ListContainer = styled.div<any>`
   margin-bottom: 1rem;
   border: 0.5rem solid ${({ $active, $color }) => ($active ? $color : "#eee")};
   min-width: 15rem;
   border-radius: 1rem;
+
+  :focus-within {
+    ${WheelNameInput} {
+      border: 2px solid #bbb;
+      background-color: white;
+    }
+    ${StyledTextArea} {
+      border: 2px solid #bbb;
+      background-color: white;
+      color: black;
+    }
+  }
 `;
 
 const ListContainerInner = styled.div<any>`
@@ -58,51 +114,6 @@ const StyledButton = styled(({ onClick, ...props }) => (
   }
   outline: none;
   visibility: ${({ disabled }) => (disabled ? "hidden" : "show")};
-`;
-
-const WheelNameInput = styled<any>(AutosizeInput)`
-  display: block;
-  margin: 0;
-  padding: 0.3rem 0.5rem;
-  font-size: 10pt;
-  border: 2px solid transparent;
-  background-color: transparent;
-  border-radius: 0.5rem;
-
-  :focus-within {
-    border: 2px solid #bbb;
-    background-color: white;
-  }
-  input {
-    font-family: "Varela Round", sans-serif;
-    font-size: 16pt;
-    font-weight: bold;
-    outline: none;
-    padding: 0;
-    border: none;
-    background-color: transparent;
-  }
-`;
-
-const StyledTextArea = styled<any>(TextareaAutosize)`
-  border: none;
-  font-family: inherit;
-  font-size: 12pt;
-
-  resize: none;
-  overflow: hidden;
-  line-height: 1.5;
-  padding: 0.3rem 0.5rem;
-  border: 2px solid transparent;
-  border-radius: 0.5rem;
-  outline: none;
-  background-color: inherit;
-  :focus-within {
-    border: 2px solid #bbb;
-    background-color: white;
-    color: black;
-  }
-  width: calc(100% - 1.4rem);
 `;
 
 function moveCursorToEnd(el: any) {
@@ -190,13 +201,15 @@ function NameList({
             spellCheck={false}
             $active={active}
           />
-          <StyledButton
-            type="button"
-            disabled={!canDeleteWheel}
-            onClick={onDeleteWheel}
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </StyledButton>
+          {canDeleteWheel ? (
+            <StyledButton
+              type="button"
+              disabled={!canDeleteWheel}
+              onClick={onDeleteWheel}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </StyledButton>
+          ) : null}
         </ListTitleContainer>
         <StyledTextArea
           ref={textAreaRef}
