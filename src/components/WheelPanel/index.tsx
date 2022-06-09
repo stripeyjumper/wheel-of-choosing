@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 
 import Wheel from "./Wheel";
@@ -26,6 +26,15 @@ function shouldSkipName(name?: string) {
 
 const baseColors = ["#e75449", "#2a4257", "#407f61", "#dec752", "#d27c3f"];
 
+function useRandomColorSettings() {
+  const [colorSettings] = useState(() => ({
+    colorOffset: Math.random(),
+    reverseColors: Math.random() < 0.5,
+  }));
+
+  return colorSettings;
+}
+
 function WheelPanel() {
   const dispatch = useDispatch();
   const { wheels, selectedWheel, loading, scrollDirection } = useWheels();
@@ -33,13 +42,22 @@ function WheelPanel() {
   const { width } = useWindowSize();
   const { id: selectedWheelId, label, segments, isSpinning } = selectedWheel;
 
+  // The color settings will persist for the lifetime of the panel
+  const { colorOffset, reverseColors } = useRandomColorSettings();
+
   const segmentsWithColors = useMemo(() => {
     const colors = getColors(segments.length, baseColors);
+
+    if (reverseColors) {
+      colors.reverse();
+    }
+    const indexOffset = Math.floor(colorOffset * segments.length);
+
     return segments.map((segment, i) => ({
       ...segment,
-      color: colors[i],
+      color: colors[(i + indexOffset) % segments.length],
     }));
-  }, [segments]);
+  }, [segments, colorOffset, reverseColors]);
 
   const visibleSegments = useMemo(
     () => segmentsWithColors.filter(({ removed }) => !removed),
