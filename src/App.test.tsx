@@ -1,9 +1,9 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test('renders title', () => {
+test("renders title", () => {
   render(<App />);
-  const  titleElement = screen.getByText(/wheel of choosings/i);
-  expect(titleElement).toBeInTheDocument();
+  const titleElement = screen.getAllByText(/Wheel of choosing/i);
+  expect(titleElement.length).toBeGreaterThan(0);
 });
