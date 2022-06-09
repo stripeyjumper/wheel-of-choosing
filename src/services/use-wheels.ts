@@ -108,7 +108,10 @@ export function useWheels(): {
           setSerializedState(serialized);
           window.localStorage.setItem(LOCAL_STORAGE_KEY, serialized);
           if (showDataUrl && serialized && serialized.length <= 1024) {
-            history.replace({ pathname: "/", search: `?wheels=${serialized}` });
+            history.replace({
+              pathname: "/",
+              search: `?wheels=${encodeURIComponent(serialized)}`,
+            });
           } else {
             history.replace({ pathname: "/", search: "" });
           }

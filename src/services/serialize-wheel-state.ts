@@ -89,22 +89,18 @@ function mapFromSavedState(savedState: SavedState): WheelManagerState {
  * Transient state like hidden segments is not preserved.
  * */
 export function serializeWheelState(state: WheelManagerState) {
-  return encodeURI(
-    compress(JSON.stringify(mapToSavedState(state)), {
-      outputEncoding: "Base64",
-    })
-  );
+  return compress(JSON.stringify(mapToSavedState(state)), {
+    outputEncoding: "Base64",
+  });
 }
 
 /** Get fully hydrated wheel state from a base64 string */
 export function deserializeWheelState(data: string): WheelManagerState | null {
   let result: WheelManagerState | null = null;
   try {
-    const json = decodeURI(
-      decompress(data, {
-        inputEncoding: "Base64",
-      })
-    );
+    const json = decompress(data, {
+      inputEncoding: "Base64",
+    });
     const savedState = JSON.parse(json) as SavedState;
 
     if (!validateSavedState(savedState)) {
@@ -116,7 +112,7 @@ export function deserializeWheelState(data: string): WheelManagerState | null {
     }
 
     result = mapFromSavedState(savedState);
-  } catch (e) {
+  } catch (e: any) {
     console.error(`Error deserializing wheel data: ${e.message}`);
   }
 

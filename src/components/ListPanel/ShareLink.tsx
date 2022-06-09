@@ -132,7 +132,10 @@ function ShareLink({
   }, [showTextbox]);
 
   const url = useMemo(
-    () => `${window.location.origin}/?wheels=${serializedState}`,
+    () =>
+      `${window.location.origin}/?wheels=${
+        serializedState ? encodeURIComponent(serializedState) : ""
+      }`,
     [serializedState]
   );
 
