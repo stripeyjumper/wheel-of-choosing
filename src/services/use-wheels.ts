@@ -33,7 +33,6 @@ function getLegacyStateFromLocalStorage() {
         result = {
           wheels: data.wheels,
           selectedWheelIndex,
-          isSpinning: false,
           showDataUrl: false,
         };
       }
@@ -55,7 +54,6 @@ function getStateFromQueryString() {
 export function useWheels(): {
   loading: boolean;
   wheels: Wheel[];
-  isSpinning: boolean;
   selectedWheel: Wheel;
   serializedState?: string | null;
   scrollDirection: "up" | "down" | null;
@@ -83,7 +81,6 @@ export function useWheels(): {
     wheels,
     selectedWheelIndex,
     prevSelectedWheelIndex,
-    isSpinning,
     showDataUrl,
   } = state;
 
@@ -131,7 +128,6 @@ export function useWheels(): {
   return {
     loading,
     wheels,
-    isSpinning,
     selectedWheel,
     serializedState,
     scrollDirection,

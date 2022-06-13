@@ -17,7 +17,6 @@ const defaultState: WheelManagerState = {
   ],
   selectedWheelIndex: 0,
   prevSelectedWheelIndex: undefined,
-  isSpinning: false,
   showDataUrl: false,
 };
 
