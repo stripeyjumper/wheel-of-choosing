@@ -73,6 +73,7 @@ function mapFromSavedState(savedState: SavedState): WheelManagerState {
       label: segmentLabel,
       selected: false,
       removed: false,
+      shufflePosition: Math.random(),
     })),
     isSpinning: false,
   }));

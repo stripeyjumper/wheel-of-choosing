@@ -7,13 +7,11 @@ const defaultState: WheelManagerState = {
     {
       id: uuid(),
       label: "Wheel of choosing",
-      segments: [
-        { id: uuid(), label: "Name 1" },
-        { id: uuid(), label: "Name 2" },
-        { id: uuid(), label: "Name 3" },
-        { id: uuid(), label: "Name 4" },
-        { id: uuid(), label: "Name 5" },
-      ],
+      segments: [1, 2, 3, 4, 5].map((i) => ({
+        id: uuid(),
+        label: `Name ${i}`,
+        shufflePosition: Math.random(),
+      })),
       isSpinning: false,
     },
   ],
@@ -49,7 +47,7 @@ function deleteItemFromArray<TItem extends { id: any }>(
 
 function mergeSegments(
   segments: WheelSegment[],
-  nextSegments: { id: string; label: string }[]
+  nextSegments: { id: string; label: string; shufflePosition: number }[]
 ) {
   const remainingSegments = [...segments];
   const results: (WheelSegment | null)[] = Array(nextSegments.length).fill(
@@ -72,7 +70,7 @@ function mergeSegments(
 
   // Re-use existing segments with updated names, if possible
   missingIndexes.forEach((index) => {
-    const { label, id } = nextSegments[index];
+    const { id, label, shufflePosition } = nextSegments[index];
     if (remainingSegments.length) {
       results[index] = { ...remainingSegments[0], label };
       remainingSegments.splice(0, 1);
@@ -82,6 +80,7 @@ function mergeSegments(
         label,
         selected: false,
         removed: false,
+        shufflePosition,
       };
     }
   });
@@ -95,7 +94,7 @@ const reducers = {
       state: WheelManagerState,
       action: PayloadAction<{
         id: string;
-        segments: { id: string; label: string }[];
+        segments: { id: string; label: string; shufflePosition: number }[];
       }>
     ) {
       const { id, segments: nextSegments } = action.payload;
@@ -115,6 +114,7 @@ const reducers = {
           segments: labels.map((label) => ({
             id: uuid(),
             label,
+            shufflePosition: Math.random(),
           })),
         },
       };

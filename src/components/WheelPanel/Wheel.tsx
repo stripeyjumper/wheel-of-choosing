@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import WheelSegment, { EmptyWheel } from "./WheelSegment";
 import { motion, useMotionTemplate, useSpring } from "framer-motion";
 import { getRandomInteger } from "../../helpers/get-random-integer";
@@ -180,11 +180,6 @@ const CountOfNames = styled.span`
   opacity: 0.7;
 `;
 
-const useRandomAngle = () => {
-  const [value] = useState(() => Math.random() * 2 * Math.PI);
-  return value;
-};
-
 function Wheel({
   label,
   segments,
@@ -200,9 +195,7 @@ function Wheel({
   const duration = 2000;
   const isEmpty = !segments.length;
 
-  const randomAngle = useRandomAngle();
-
-  const spinAngle = useSpring(isEmpty ? 0 : randomAngle, {
+  const spinAngle = useSpring(0, {
     duration: 2000,
   });
   const segmentAngle = (2 * Math.PI) / segments.length;

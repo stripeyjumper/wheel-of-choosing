@@ -13,6 +13,7 @@ export interface WheelSegment {
   label: string;
   selected?: boolean;
   removed?: boolean;
+  shufflePosition: number;
 }
 
 export interface Wheel {

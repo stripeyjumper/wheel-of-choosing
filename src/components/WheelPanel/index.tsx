@@ -13,6 +13,7 @@ import {
   startSpin,
   selectWheel,
 } from "../../services/wheel-reducer";
+import { WheelSegment } from "../../services/types";
 
 const skipName = process.env.REACT_APP_SKIP_NAME;
 
@@ -26,26 +27,14 @@ function shouldSkipName(name?: string) {
 
 const baseColors = ["#e75449", "#2a4257", "#407f61", "#dec752", "#d27c3f"];
 
-function useRandomColorSettings() {
-  const [colorSettings] = useState(() => ({
+function useSegmentsWithColors(segments: WheelSegment[]) {
+  // The color settings will persist for the lifetime of the panel
+  const [{ colorOffset, reverseColors }] = useState(() => ({
     colorOffset: Math.random(),
     reverseColors: Math.random() < 0.5,
   }));
 
-  return colorSettings;
-}
-
-function WheelPanel() {
-  const dispatch = useDispatch();
-  const { wheels, selectedWheel, loading, scrollDirection } = useWheels();
-
-  const { width } = useWindowSize();
-  const { id: selectedWheelId, label, segments, isSpinning } = selectedWheel;
-
-  // The color settings will persist for the lifetime of the panel
-  const { colorOffset, reverseColors } = useRandomColorSettings();
-
-  const segmentsWithColors = useMemo(() => {
+  return useMemo(() => {
     const colors = getColors(segments.length, baseColors);
 
     if (reverseColors) {
@@ -58,6 +47,25 @@ function WheelPanel() {
       color: colors[(i + indexOffset) % segments.length],
     }));
   }, [segments, colorOffset, reverseColors]);
+}
+
+const useShuffledSegments = (segments: WheelSegment[]) => {
+  return useMemo(() => {
+    const shuffled = [...segments];
+    shuffled.sort((a, b) => a.shufflePosition - b.shufflePosition);
+    return shuffled;
+  }, [segments]);
+};
+
+function WheelPanel() {
+  const dispatch = useDispatch();
+  const { wheels, selectedWheel, loading, scrollDirection } = useWheels();
+
+  const { width } = useWindowSize();
+  const { id: selectedWheelId, label, segments, isSpinning } = selectedWheel;
+
+  const shuffledSegments = useShuffledSegments(segments);
+  const segmentsWithColors = useSegmentsWithColors(shuffledSegments);
 
   const visibleSegments = useMemo(
     () => segmentsWithColors.filter(({ removed }) => !removed),

@@ -91,7 +91,7 @@ function WheelSegment({
   const [x2, y2] = getCoordinates(radius, rotation + angle / 2);
 
   useEffect(() => {
-    if (labelRef.current) {
+    if (labelRef.current && labelRef.current.getBBox) {
       const dimensions = labelRef.current.getBBox();
       const maxLength = radius - 25;
       const scale =
